@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:background="#e9e8dd"
+tools:context=".LoginActivity" >
+
+
+    <android.support.v7.widget.AppCompatEditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:inputType="textEmailAddress"
+        android:id="@+id/email"
+        android:hint="@string/login_email_hint"/>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/password"
+        android:layout_width="300dp"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/loginbtn"
+        android:textColor="#ffffff"
+        android:textAlignment="center"
+        android:text="@string/login_login_button"/>
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal" >
+
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/register"
+            android:textColor="#ffffff"
+            android:textAlignment="center"
+            android:text="@string/login_register_button"/>
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/forgotpass"
+            android:layout_marginLeft="10dp"
+            android:textColor="#ffffff"
+            android:textAlignment="center"
+            android:text="@string/login_forgot_password_button"/>
+
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+
+</android.support.v7.widget.LinearLayoutCompat>

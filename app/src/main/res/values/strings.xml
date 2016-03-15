@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">GuideMeApp</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
+
+    <!-- Login -->
+    <string name="login_email_hint">example@sfsu.edu</string>
+    <string name="login_login_button">Login</string>
+    <string name="login_register_button">Register</string>
+    <string name="login_forgot_password_button">Forgot Password</string>
+    <string name="change_password_old_hint">Old Password</string>
+    <string name="change_password_new_hint">New Password</string>
+    <string name="change_password_code_hint">Code</string>
+    <string name="change_password_button">Change Password</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="continue_button">Continue</string>
+</resources>

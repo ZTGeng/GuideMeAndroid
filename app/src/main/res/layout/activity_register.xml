@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+
+    tools:context=".LoginActivity" >
+
+    <android.support.v7.widget.AppCompatEditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:inputType="textEmailAddress"
+        android:id="@+id/email"
+        android:layout_marginTop="30dp"
+        android:hint="@string/login_email_hint"/>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/password"
+        android:layout_gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/registerbtn"
+        android:layout_gravity="center"
+        android:textColor="#ffffff"
+        android:textAlignment="center"
+        android:text="@string/login_register_button"/>
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:id="@+id/login"
+        android:layout_gravity="center"
+        android:textColor="#ffffff"
+        android:textAlignment="center"
+        android:text="@string/login_login_button"/>
+
+
+
+</android.support.v7.widget.LinearLayoutCompat>

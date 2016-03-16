@@ -82,8 +82,7 @@ public class HelperHomeActivity extends AppCompatActivity {
                         params.add(new BasicNameValuePair("newpass", newpasstxt));
                         params.add(new BasicNameValuePair("id", token));
                         ServerRequest sr = new ServerRequest();
-                        String loginServer = Config.LOGIN_SERVER_ADDRESS + ":" + Config.LOGIN_SERVER_PORT;
-                        JSONObject json = sr.getJSON(loginServer + "/api/chgpass", params);
+                        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/chgpass", params);
                         if (json != null) {
                             try {
                                 String jsonstr = json.getString("response");

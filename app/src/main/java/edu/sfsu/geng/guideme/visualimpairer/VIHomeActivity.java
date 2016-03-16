@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -29,11 +31,13 @@ public class VIHomeActivity extends AppCompatActivity {
 
     SharedPreferences pref;
     String token,grav,usernameStr,oldpasstxt,newpasstxt;
-    AppCompatButton chgpass,chgpassfr,cancel,logout;
+    AppCompatButton chgpass,chgpassfr,cancel,logout,newVideoCall;
     Dialog dlg;
     AppCompatEditText oldpass,newpass;
     List<NameValuePair> params;
     AppCompatTextView username;
+    AppCompatSpinner topicSpinner;
+    AppCompatSpinner friendSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +89,7 @@ public class VIHomeActivity extends AppCompatActivity {
                         params.add(new BasicNameValuePair("newpass", newpasstxt));
                         params.add(new BasicNameValuePair("id", token));
                         ServerRequest sr = new ServerRequest();
-                        String loginServer = Config.LOGIN_SERVER_ADDRESS + ":" + Config.LOGIN_SERVER_PORT;
-                        JSONObject json = sr.getJSON(loginServer + "/api/chgpass", params);
+                        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/chgpass", params);
                         if (json != null) {
                             try {
                                 String jsonstr = json.getString("response");
@@ -115,6 +118,34 @@ public class VIHomeActivity extends AppCompatActivity {
                 dlg.show();
             }
         });
+
+        newVideoCall = (AppCompatButton) findViewById(R.id.new_video_call);
+        newVideoCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
+                startActivity(viVideoActivity);
+                finish();
+            }
+        });
+
+        topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.topics_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        topicSpinner.setAdapter(adapter);
+
+        friendSpinner = (AppCompatSpinner) findViewById(R.id.friend_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> friends = ArrayAdapter.createFromResource(this,
+                R.array.friends_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        friendSpinner.setAdapter(friends);
 
     }
 

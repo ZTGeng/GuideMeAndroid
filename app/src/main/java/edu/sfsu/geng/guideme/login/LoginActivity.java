@@ -70,8 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("password", passwordText));
                 ServerRequest sr = new ServerRequest();
 
-                String loginServer = Config.LOGIN_SERVER_ADDRESS + ":" + Config.LOGIN_SERVER_PORT;
-                JSONObject json = sr.getJSON(loginServer + "/login",params);
+                JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/login",params);
                 if(json != null){
                     try{
                         String jsonstr = json.getString("response");
@@ -129,8 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                         params = new ArrayList<NameValuePair>();
                         params.add(new BasicNameValuePair("email", email_res_txt));
 
-                        final String loginServer = Config.LOGIN_SERVER_ADDRESS + ":" + Config.LOGIN_SERVER_PORT;
-                        JSONObject json = sr.getJSON(loginServer + "/api/resetpass", params);
+                        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/resetpass", params);
 
                         if (json != null) {
                             try {
@@ -161,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
                                             params.add(new BasicNameValuePair("code", code_txt));
                                             params.add(new BasicNameValuePair("newpass", npass_txt));
 
-                                            JSONObject json = sr.getJSON(loginServer + "/api/resetpass/chg", params);
+                                            JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/resetpass/chg", params);
 
                                             if (json != null) {
                                                 try {

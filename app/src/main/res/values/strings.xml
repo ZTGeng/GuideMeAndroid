@@ -4,6 +4,7 @@
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_vihome">VIHomeActivity</string>
     <string name="title_activity_helper_home">HelperHomeActivity</string>
+    <string name="title_activity_vivideo">VIVideoActivity</string>
 
     <!-- Login -->
     <string name="login_email_hint">example@sfsu.edu</string>
@@ -22,5 +23,23 @@
 
     <!-- Home -->
     <string name="new_video_call_button">New Video Call</string>
-    <string name="title_activity_vivideo">VIVideoActivity</string>
+    <string name="topic_hint">Choose a topic:</string>
+    <string name="friend_hint">Call a friend or anyone?</string>
+
+    <!-- Video -->
+    <string name="accept_button">Accept</string>
+    <string name="refuse_button">Refuse</string>
+    <string name="connect_hint">Waiting...</string>
+
+    <!-- Topics -->
+    <string-array name="topics_array">
+        <item>General</item>
+        <item>Navigation</item>
+        <item>Finding</item>
+        <item>Cooking</item>
+        <item>Recreation</item>
+    </string-array>
+    <string-array name="friends_array">
+        <item>Anyone</item>
+    </string-array>
 </resources>

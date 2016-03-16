@@ -57,6 +57,24 @@
             android:text="@string/new_video_call_button"
             android:id="@+id/new_video_call"/>
 
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/topic_hint"/>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/topic_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/friend_hint"/>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/friend_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </android.support.v7.widget.LinearLayoutCompat>
 
 </RelativeLayout>

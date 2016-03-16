@@ -52,24 +52,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:id="@+id/vi_radio_button"
+            android:checkedButton="@+id/radio_button_helper">
 
-            <android.support.v7.widget.AppCompatRadioButton
+            <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:text="Helper"
-                android:checked="true">
+                android:id="@+id/radio_button_helper">
 
-            </android.support.v7.widget.AppCompatRadioButton>
+            </RadioButton>
 
-            <android.support.v7.widget.AppCompatRadioButton
+            <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:text="Visual Impairer"
-                android:checked="false"
-                android:id="@+id/vi_radio_button">
+                android:id="@+id/radio_button_vi">
 
-            </android.support.v7.widget.AppCompatRadioButton>
+            </RadioButton>
 
         </RadioGroup>
 

@@ -8,6 +8,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.util.Log;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -25,7 +26,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     AppCompatEditText email,username,password;
     AppCompatButton login,register;
-    AppCompatRadioButton viRadioButton;
+    RadioButton viRadioButton;
     String emailText, usernameText, passwordText, roleText;
     List<NameValuePair> params;
 
@@ -39,7 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         password = (AppCompatEditText)findViewById(R.id.password);
         register = (AppCompatButton)findViewById(R.id.registerbtn);
         login = (AppCompatButton)findViewById(R.id.login);
-        viRadioButton = (AppCompatRadioButton)findViewById(R.id.vi_radio_button);
+        viRadioButton = (RadioButton)findViewById(R.id.radio_button_vi);
         roleText = "helper";
 
         login.setOnClickListener(new View.OnClickListener() {
@@ -66,8 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("password", passwordText));
                 params.add(new BasicNameValuePair("role", roleText));
                 ServerRequest sr = new ServerRequest();
-                String loginServer = Config.LOGIN_SERVER_ADDRESS + ":" + Config.LOGIN_SERVER_PORT;
-                JSONObject json = sr.getJSON(loginServer + "/register", params);
+                JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/register", params);
 
                 if(json != null){
                     try{
@@ -76,6 +76,10 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_LONG).show();
 
                         Log.d("Hello", jsonStr);
+
+                        Intent regactivity = new Intent(RegisterActivity.this, LoginActivity.class);
+                        startActivity(regactivity);
+                        finish();
                     }catch (JSONException e) {
                         e.printStackTrace();
                     }

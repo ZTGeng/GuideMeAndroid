@@ -8,7 +8,89 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="edu.sfsu.geng.guideme.login.RegisterActivity"
     tools:showIn="@layout/activity_register">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:inputType="textEmailAddress"
+            android:id="@+id/email"
+            android:layout_marginTop="30dp"
+            android:hint="@string/login_email_hint"/>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/username"
+            android:layout_marginTop="30dp"
+            android:hint="@string/login_username_hint"/>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/password"
+            android:layout_gravity="center"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="@string/login_password_hint"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:text="Are you a Helper or a Visual Impairer?"/>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Helper"
+                android:checked="true">
+
+            </android.support.v7.widget.AppCompatRadioButton>
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Visual Impairer"
+                android:checked="false"
+                android:id="@+id/vi_radio_button">
+
+            </android.support.v7.widget.AppCompatRadioButton>
+
+        </RadioGroup>
+
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/registerbtn"
+            android:layout_gravity="center"
+            android:textColor="#ffffff"
+            android:textAlignment="center"
+            android:text="@string/login_register_button"/>
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/login"
+            android:layout_gravity="center"
+            android:textColor="#ffffff"
+            android:textAlignment="center"
+            android:text="@string/login_login_button"/>
+
+    </android.support.v7.widget.LinearLayoutCompat>
 
 </RelativeLayout>

@@ -15,20 +15,20 @@
         android:layout_gravity="center" />
 
     <android.support.v7.widget.AppCompatButton
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/resbtn"
         android:textColor="#ffffff"
         android:textAlignment="center"
-        android:text="@string/continue_button"/>
+        android:text="@string/login_continue_button"/>
 
     <android.support.v7.widget.AppCompatButton
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="40dp"
         android:id="@+id/cancelbtn"
         android:textColor="#ffffff"
         android:textAlignment="center"
-        android:text="@string/cancel_button"/>
+        android:text="@string/login_cancel_button"/>
 </android.support.v7.widget.LinearLayoutCompat>

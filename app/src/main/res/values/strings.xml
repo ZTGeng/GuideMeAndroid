@@ -1,10 +1,14 @@
 <resources>
-    <string name="app_name">GuideMeApp</string>
+    <string name="app_name">GuideMe</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_vihome">VIHomeActivity</string>
+    <string name="title_activity_helper_home">HelperHomeActivity</string>
 
     <!-- Login -->
     <string name="login_email_hint">example@sfsu.edu</string>
+    <string name="login_username_hint">Username</string>
+    <string name="login_password_hint">Password</string>
     <string name="login_login_button">Login</string>
     <string name="login_register_button">Register</string>
     <string name="login_forgot_password_button">Forgot Password</string>
@@ -12,6 +16,11 @@
     <string name="change_password_new_hint">New Password</string>
     <string name="change_password_code_hint">Code</string>
     <string name="change_password_button">Change Password</string>
-    <string name="cancel_button">Cancel</string>
-    <string name="continue_button">Continue</string>
+    <string name="login_cancel_button">Cancel</string>
+    <string name="login_continue_button">Continue</string>
+    <string name="logout_button">Logout</string>
+
+    <!-- Home -->
+    <string name="new_video_call_button">New Video Call</string>
+    <string name="title_activity_vivideo">VIVideoActivity</string>
 </resources>

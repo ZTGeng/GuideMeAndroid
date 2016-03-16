@@ -21,6 +21,8 @@ import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
+import edu.sfsu.geng.guideme.helper.HelperHomeActivity;
+import edu.sfsu.geng.guideme.visualimpairer.VIHomeActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -44,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         register = (AppCompatButton)findViewById(R.id.register);
         forpass = (AppCompatButton)findViewById(R.id.forgotpass);
 
-        pref = getSharedPreferences("AppPref", MODE_PRIVATE);
+        pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,14 +78,21 @@ public class LoginActivity extends AppCompatActivity {
                         if(json.getBoolean("res")){
                             String token = json.getString("token");
                             String grav = json.getString("grav");
+                            String username = json.getString("username");
+                            String role = json.getString("role");
                             SharedPreferences.Editor edit = pref.edit();
                             //Storing Data using SharedPreferences
                             edit.putString("token", token);
                             edit.putString("grav", grav);
+                            edit.putString("username", username);
                             edit.commit();
-                            Intent profactivity = new Intent(LoginActivity.this, ProfileActivity.class);
-
-                            startActivity(profactivity);
+                            Intent homeActivity;
+                            if (role.equals("vi")) {
+                                homeActivity = new Intent(LoginActivity.this, VIHomeActivity.class);
+                            } else {// if (role.equals("helper")) {
+                                homeActivity = new Intent(LoginActivity.this, HelperHomeActivity.class);
+                            }
+                            startActivity(homeActivity);
                             finish();
                         }
 

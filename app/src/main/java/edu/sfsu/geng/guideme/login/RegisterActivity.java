@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -22,9 +23,10 @@ import edu.sfsu.geng.guideme.R;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    AppCompatEditText email,password;
+    AppCompatEditText email,username,password;
     AppCompatButton login,register;
-    String emailText, passwordText;
+    AppCompatRadioButton viRadioButton;
+    String emailText, usernameText, passwordText, roleText;
     List<NameValuePair> params;
 
     @Override
@@ -33,9 +35,12 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         email = (AppCompatEditText)findViewById(R.id.email);
+        username = (AppCompatEditText)findViewById(R.id.username);
         password = (AppCompatEditText)findViewById(R.id.password);
         register = (AppCompatButton)findViewById(R.id.registerbtn);
         login = (AppCompatButton)findViewById(R.id.login);
+        viRadioButton = (AppCompatRadioButton)findViewById(R.id.vi_radio_button);
+        roleText = "helper";
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,10 +57,14 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 emailText = email.getText().toString();
+                usernameText = username.getText().toString();
                 passwordText = password.getText().toString();
+                roleText = viRadioButton.isChecked() ? "vi" : "helper";
                 params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("email", emailText));
+                params.add(new BasicNameValuePair("username", usernameText));
                 params.add(new BasicNameValuePair("password", passwordText));
+                params.add(new BasicNameValuePair("role", roleText));
                 ServerRequest sr = new ServerRequest();
                 String loginServer = Config.LOGIN_SERVER_ADDRESS + ":" + Config.LOGIN_SERVER_PORT;
                 JSONObject json = sr.getJSON(loginServer + "/register", params);

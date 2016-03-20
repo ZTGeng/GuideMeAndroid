@@ -119,16 +119,6 @@ public class VIHomeActivity extends AppCompatActivity {
             }
         });
 
-        newVideoCall = (AppCompatButton) findViewById(R.id.new_video_call);
-        newVideoCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
-                startActivity(viVideoActivity);
-                finish();
-            }
-        });
-
         topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -147,6 +137,16 @@ public class VIHomeActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         friendSpinner.setAdapter(friends);
 
+
+        newVideoCall = (AppCompatButton) findViewById(R.id.new_video_call);
+        newVideoCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
+                startActivity(viVideoActivity);
+                finish();
+            }
+        });
     }
 
 }

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.ListViewCompat;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ public class HelperHomeActivity extends AppCompatActivity {
     AppCompatEditText oldpass,newpass;
     List<NameValuePair> params;
     AppCompatTextView username;
+    ListViewCompat roomList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +113,8 @@ public class HelperHomeActivity extends AppCompatActivity {
                 dlg.show();
             }
         });
+
+        roomList = (ListViewCompat) findViewById(R.id.room_list);
 
     }
 

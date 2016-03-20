@@ -66,14 +66,6 @@ public class VIVideoActivity extends AppCompatActivity implements
 
     private static final String TAG = "VIVideo";
 
-
-//    private static final String PREFERENCE_KEY_SERVER_URL = "url";
-//    private static final int SETTINGS_ANIMATION_DURATION = 400;
-//    private static final int SETTINGS_ANIMATION_ANGLE = 90;
-
-    private static final int UPDATE_INTERVAL=1000;
-    private final int FASTEST_UPDATE_INTERVAL=1000;
-
     /**
      * Initialize OpenWebRTC at startup
      */
@@ -83,21 +75,13 @@ public class VIVideoActivity extends AppCompatActivity implements
         Owr.runInBackground();
     }
 
-//    private Button mJoinButton;
-//    private Button mCallButton;
-//    private EditText mSessionInput;
-    //    private CheckBox mAudioCheckBox;
-//    private CheckBox mVideoCheckBox;
-//    private EditText mUrlSetting;
-//    private View mHeader;
-//    private View mSettingsHeader;
-
     private AppCompatTextView connectText;
-    private AppCompatButton acceptButton;
+    private AppCompatButton acceptButton, declineButton;
+    FloatingActionButton fab;
 
     private SignalingChannel mSignalingChannel;
-    private InputMethodManager mInputMethodManager;
-    private WindowManager mWindowManager;
+//    private InputMethodManager mInputMethodManager;
+//    private WindowManager mWindowManager;
     private SignalingChannel.PeerChannel mPeerChannel;
     private RtcSession mRtcSession;
     private SimpleStreamSet mStreamSet;
@@ -117,48 +101,78 @@ public class VIVideoActivity extends AppCompatActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_vi_video);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d(TAG, "Floating button onClicked");
-                    if (mRtcSession != null) {
-                        mRtcSession.stop();
-                    }
-                    mPeerChannel = null;
-                    Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
-                    startActivity(homeActivity);
-                    finish();
-                }
-            });
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
+        if (connectText != null) {
+            connectText.setText(R.string.connect_hint);
+        } else {
+            Log.d(TAG, "onCreate: connectText is null!");
         }
 
-        initUi();
+        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
+        if (acceptButton != null) {
+            acceptButton.setEnabled(false);
+        } else {
+            Log.d(TAG, "onCreate: acceptButton is null!");
+        }
 
-        mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
+        if (declineButton != null) {
+            declineButton.setEnabled(false);
+        } else {
+            Log.d(TAG, "onCreate: declineButton is null!");
+        }
 
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+//        mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+//        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mRtcConfig = RtcConfigs.defaultConfig(Config.STUN_SERVER);
 
         //obtain necessary permissions for API level 23 and over (Marshmallow)
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAPTURE_AUDIO_OUTPUT) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)   != PackageManager.PERMISSION_GRANTED
+         || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+         || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)                 != PackageManager.PERMISSION_GRANTED
+         || ContextCompat.checkSelfPermission(this, Manifest.permission.CAPTURE_AUDIO_OUTPUT)   != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.CAPTURE_AUDIO_OUTPUT}, LOCATION_PERMISSION);
+                                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                                 Manifest.permission.CAMERA,
+                                                                 Manifest.permission.CAPTURE_AUDIO_OUTPUT}, LOCATION_PERMISSION);
         }
 
 //        createLocationRequest();
 //        buildGoogleApiClient(this);
+
         join();
     }
 
     @Override
     public void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        initUi();
+        setContentView(R.layout.activity_vi_video);
+
+        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
+        if (connectText != null) {
+            connectText.setText(R.string.connect_hint);
+        } else {
+            Log.d(TAG, "onConfigurationChanged: connectText is null!");
+        }
+
+        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
+        if (acceptButton != null) {
+            acceptButton.setEnabled(false);
+        } else {
+            Log.d(TAG, "onConfigurationChanged: acceptButton is null!");
+        }
+
+        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
+        if (declineButton != null) {
+            declineButton.setEnabled(false);
+        } else {
+            Log.d(TAG, "onConfigurationChanged: declineButton is null!");
+        }
+
         updateVideoView(true);
     }
 
@@ -167,6 +181,8 @@ public class VIVideoActivity extends AppCompatActivity implements
             TextureView selfView = (TextureView) findViewById(R.id.self_view);
             if (selfView != null) {
                 selfView.setVisibility(running ? View.VISIBLE : View.INVISIBLE);
+            } else {
+                Log.d(TAG, "updateVideoView: selfView is null!");
             }
             if (running) {
                 Log.d(TAG, "setting self-view: " + selfView);
@@ -175,41 +191,56 @@ public class VIVideoActivity extends AppCompatActivity implements
                 Log.d(TAG, "stopping self-view");
                 mSelfView.stop();
             }
+        } else {
+            Log.d(TAG, "updateVideoView: mStreamSet is null!");
         }
     }
 
-    public void initUi() {
-        setContentView(R.layout.activity_vi_video);
-
-        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
-        if (connectText != null) {
-            connectText.setText(R.string.connect_hint);
-        }
-
-        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
-        if (acceptButton != null) {
-            acceptButton.setClickable(false);
-        }
-    }
 
     public void onAcceptClicked(final View view) {
         Log.d(TAG, "onAcceptClicked");
-        call();
-    }
-
-    public void onRefuseClicked(final View view) {
-        Log.d(TAG, "onRefuseClicked");
-
-    }
-
-    public void onSelfViewClicked(final View view) {
-        Log.d(TAG, "onSelfViewClicked");
-        if (mStreamSet != null) {
-            if (mSelfView != null) {
-                mSelfView.setRotation((mSelfView.getRotation() + 1) % 4);
+        if (mRtcSession != null) {
+            if (mStreamSet != null) {
+                mRtcSession.start(mStreamSet);
+            } else {
+                Log.d(TAG, "onAcceptClicked: mStreamSet is null!");
             }
+        } else {
+            Log.d(TAG, "onAcceptClicked: mRtcSession is null!");
         }
+        acceptButton.setEnabled(false);
+        declineButton.setEnabled(false);
     }
+
+    public void onDeclineClicked(final View view) {
+        Log.d(TAG, "onRefuseClicked");
+        // TODO: tell setver to remove peer
+//        if (mRtcSession != null) {
+//            mRtcSession.stop();
+//        } else {
+//            Log.d(TAG, "onAcceptClicked: mRtcSession is null!");
+//        }
+        mPeerChannel = null;
+        acceptButton.setEnabled(false);
+        declineButton.setEnabled(false);
+    }
+
+    public void onFabClicked(final View view) {
+        Log.d(TAG, "Floating button onClicked");
+        onDisconnect();
+        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
+        startActivity(homeActivity);
+        finish();
+    }
+
+//    public void onSelfViewClicked(final View view) {
+//        Log.d(TAG, "onSelfViewClicked");
+//        if (mStreamSet != null) {
+//            if (mSelfView != null) {
+//                mSelfView.setRotation((mSelfView.getRotation() + 1) % 4);
+//            }
+//        }
+//    }
 
     private String getRandomSessionId() {
         Random random = new Random();
@@ -220,7 +251,7 @@ public class VIVideoActivity extends AppCompatActivity implements
         Log.d(TAG, "onJoin");
 
         String sessionId = getRandomSessionId();
-        System.out.println("====================================" + sessionId);
+        connectText.setText(connectText.getText() + sessionId); // <- for test only
 
         mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId);
         mSignalingChannel.setJoinListener(this);
@@ -249,13 +280,18 @@ public class VIVideoActivity extends AppCompatActivity implements
 
         String message = peerChannel.getPeerId() + " joined.";
         connectText.setText(message);
-        acceptButton.setClickable(true);
+        acceptButton.setEnabled(true);
+        declineButton.setEnabled(true);
     }
 
     @Override
     public void onPeerDisconnect(final SignalingChannel.PeerChannel peerChannel) {
         Log.d(TAG, "onPeerDisconnect => " + peerChannel.getPeerId());
-        mRtcSession.stop();
+        if (mRtcSession != null) {
+            mRtcSession.stop();
+        } else {
+            Log.d(TAG, "onPeerDisconnect: mRtcSession is null!");
+        }
         mPeerChannel = null;
         updateVideoView(false);
     }
@@ -305,16 +341,13 @@ public class VIVideoActivity extends AppCompatActivity implements
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else {
+            Log.d(TAG, "onLocalCandidate: mPeerChannel is null!");
         }
     }
 
-    public void call() {
-        Log.d(TAG, "onCallClicked");
-
-        mRtcSession.start(mStreamSet);
-    }
-
     private void onInboundCall(final SessionDescription sessionDescription) {
+        Log.d(TAG, "onInboundCall");
         if (mRtcSession != null) {
             try {
                 mRtcSession.setRemoteDescription(sessionDescription);
@@ -322,16 +355,21 @@ public class VIVideoActivity extends AppCompatActivity implements
             } catch (InvalidDescriptionException e) {
                 e.printStackTrace();
             }
+        } else {
+            Log.d(TAG, "onInboundCall: mRtcSession is null!");
         }
     }
 
     private void onAnswer(final SessionDescription sessionDescription) {
+        Log.d(TAG, "onAnswer");
         if (mRtcSession != null) {
             try {
                 mRtcSession.setRemoteDescription(sessionDescription);
             } catch (InvalidDescriptionException e) {
                 e.printStackTrace();
             }
+        } else {
+            Log.d(TAG, "onAnswer: mRtcSession is null!");
         }
     }
 
@@ -354,7 +392,11 @@ public class VIVideoActivity extends AppCompatActivity implements
         Toast.makeText(this, "Disconnected from server", Toast.LENGTH_LONG).show();
         updateVideoView(false);
         mStreamSet = null;
-        mRtcSession.stop();
+        if (mRtcSession != null) {
+            mRtcSession.stop();
+        } else {
+            Log.d(TAG, "onDisconnect: mRtcSession is null!");
+        }
         mRtcSession = null;
         mSignalingChannel = null;
     }
@@ -415,15 +457,19 @@ public class VIVideoActivity extends AppCompatActivity implements
 //        stopLocationUpdates();
 //    }
 //
-//    /**
-//     * Shutdown the process as a workaround until cleanup has been fully implemented.
-//     */
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        finish();
+    /**
+     * Shutdown the process as a workaround until cleanup has been fully implemented.
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mRtcSession != null) {
+            mRtcSession.stop();
+        }
+        mPeerChannel = null;
+        finish();
 //        System.exit(0);
-//    }
+    }
 //
 //    @Override
 //    protected void onResume() {

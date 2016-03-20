@@ -43,8 +43,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onRefuseClicked"
-                android:text="@string/refuse_button" />
+                android:onClick="onDeclineClicked"
+                android:text="@string/decline_button" />
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/accept_btn"

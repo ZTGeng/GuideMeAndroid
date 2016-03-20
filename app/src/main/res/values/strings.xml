@@ -28,7 +28,7 @@
 
     <!-- Video -->
     <string name="accept_button">Accept</string>
-    <string name="refuse_button">Refuse</string>
+    <string name="decline_button">Decline</string>
     <string name="connect_hint">Waiting...</string>
 
     <!-- Topics -->

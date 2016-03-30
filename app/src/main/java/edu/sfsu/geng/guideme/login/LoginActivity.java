@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
     AppCompatEditText email, password, res_email, code, newpass;
     AppCompatButton login, cont, cont_code, cancel ,cancel1, register, forpass;
-    String emailText, passwordText,email_res_txt,code_txt,npass_txt;
+    String emailText, passwordText, email_res_txt, code_txt, npass_txt;
     List<NameValuePair> params;
     SharedPreferences pref;
     Dialog reset;
@@ -79,11 +79,13 @@ public class LoginActivity extends AppCompatActivity {
                             String grav = json.getString("grav");
                             String username = json.getString("username");
                             String role = json.getString("role");
+                            int rate = json.getInt("rate");
                             SharedPreferences.Editor edit = pref.edit();
                             //Storing Data using SharedPreferences
                             edit.putString("token", token);
                             edit.putString("grav", grav);
                             edit.putString("username", username);
+                            edit.putInt("rate", rate);
                             edit.commit();
                             Intent homeActivity;
                             if (role.equals("vi")) {

@@ -42,13 +42,18 @@ import com.ericsson.research.owr.sdk.VideoView;
 //import com.google.android.gms.location.LocationRequest;
 //import com.google.android.gms.location.LocationServices;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
+import edu.sfsu.geng.guideme.login.ServerRequest;
 import edu.sfsu.geng.guideme.video.SignalingChannel;
 
 public class VIVideoActivity extends AppCompatActivity implements
@@ -87,6 +92,10 @@ public class VIVideoActivity extends AppCompatActivity implements
     private SimpleStreamSet mStreamSet;
     private VideoView mSelfView;
     private RtcConfig mRtcConfig;
+    private String sessionId;
+    private String userId;
+
+    private List<NameValuePair> params;
 
 
     private final static boolean wantAudio = true;
@@ -100,6 +109,8 @@ public class VIVideoActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_vi_video);
+        sessionId = getIntent().getStringExtra("sessionId");
+        userId = getIntent().getStringExtra("userId");
 
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -201,20 +212,35 @@ public class VIVideoActivity extends AppCompatActivity implements
         Log.d(TAG, "onAcceptClicked");
         if (mRtcSession != null) {
             if (mStreamSet != null) {
+                updateVideoView(true);
                 mRtcSession.start(mStreamSet);
+                acceptButton.setEnabled(false);
+                declineButton.setEnabled(false);
+
+                params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("username", userId));
+
+                ServerRequest sr = new ServerRequest();
+                JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/deleteroom", params);
+                if (json != null) {
+                    try {
+                        String jsonStr = json.getString("response");
+                        Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else {
                 Log.d(TAG, "onAcceptClicked: mStreamSet is null!");
             }
         } else {
             Log.d(TAG, "onAcceptClicked: mRtcSession is null!");
         }
-        acceptButton.setEnabled(false);
-        declineButton.setEnabled(false);
     }
 
     public void onDeclineClicked(final View view) {
         Log.d(TAG, "onRefuseClicked");
-        // TODO: tell setver to remove peer
+        // TODO: tell peer to quit
 //        if (mRtcSession != null) {
 //            mRtcSession.stop();
 //        } else {
@@ -242,18 +268,18 @@ public class VIVideoActivity extends AppCompatActivity implements
 //        }
 //    }
 
-    private String getRandomSessionId() {
-        Random random = new Random();
-        return String.valueOf(random.nextInt(10000000));
-    }
+//    private String getRandomSessionId() {
+//        Random random = new Random();
+//        return String.valueOf(random.nextInt(10000000));
+//    }
 
     private void join() {
         Log.d(TAG, "onJoin");
 
-        String sessionId = getRandomSessionId();
+//        String sessionId = getRandomSessionId();
         connectText.setText(connectText.getText() + sessionId); // <- for test only
 
-        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId);
+        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, userId);
         mSignalingChannel.setJoinListener(this);
         mSignalingChannel.setDisconnectListener(this);
         mSignalingChannel.setSessionFullListener(this);
@@ -264,7 +290,7 @@ public class VIVideoActivity extends AppCompatActivity implements
 
         mSelfView = CameraSource.getInstance().createVideoView();
         mSelfView.setRotation((mSelfView.getRotation() + 3) % 4);
-        updateVideoView(true);
+//        updateVideoView(true);
     }
 
     @Override

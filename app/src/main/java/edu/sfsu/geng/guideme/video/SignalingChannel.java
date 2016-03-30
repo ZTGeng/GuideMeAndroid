@@ -41,8 +41,8 @@ public class SignalingChannel {
     private DisconnectListener mDisconnectListener;
     private SessionFullListener mSessionFullListener;
 
-    public SignalingChannel(String baseUrl, String session) {
-        String userId = new BigInteger(40, new Random()).toString(32);
+    public SignalingChannel(String baseUrl, String session, String userId) {
+//        String userId = new BigInteger(40, new Random()).toString(32);
         mServerToClientUrl = baseUrl + "/stoc/" + session + "/" + userId;
         mClientToServerUrl = baseUrl + "/ctos/" + session + "/" + userId;
         mMainHandler = new Handler(Looper.getMainLooper());

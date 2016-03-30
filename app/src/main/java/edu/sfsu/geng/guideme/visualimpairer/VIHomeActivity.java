@@ -9,8 +9,8 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -27,15 +27,16 @@ import edu.sfsu.geng.guideme.R;
 import edu.sfsu.geng.guideme.login.LoginActivity;
 import edu.sfsu.geng.guideme.login.ServerRequest;
 
-public class VIHomeActivity extends AppCompatActivity {
+public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     SharedPreferences pref;
-    String token,grav,usernameStr,oldpasstxt,newpasstxt;
-    AppCompatButton chgpass,chgpassfr,cancel,logout,newVideoCall;
+    String token, grav, usernameStr, oldpassStr, newpassStr, topicStr;
+    int rateInt;
+    AppCompatButton chgPasswordBtn, chgpassfrBtn, cancelBtn, logoutBtn, newVideoCallBtn;
     Dialog dlg;
-    AppCompatEditText oldpass,newpass;
+    AppCompatEditText oldpassEditText, newpassEditText;
     List<NameValuePair> params;
-    AppCompatTextView username;
+    AppCompatTextView usernameText;
     AppCompatSpinner topicSpinner;
     AppCompatSpinner friendSpinner;
 
@@ -46,10 +47,10 @@ public class VIHomeActivity extends AppCompatActivity {
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        username = (AppCompatTextView) findViewById(R.id.username_text);
-        chgpass = (AppCompatButton)findViewById(R.id.change_btn);
-        logout = (AppCompatButton)findViewById(R.id.logout);
-        logout.setOnClickListener(new View.OnClickListener() {
+        usernameText = (AppCompatTextView) findViewById(R.id.username_text);
+        chgPasswordBtn = (AppCompatButton)findViewById(R.id.change_btn);
+        logoutBtn = (AppCompatButton)findViewById(R.id.logout);
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences.Editor edit = pref.edit();
@@ -67,38 +68,39 @@ public class VIHomeActivity extends AppCompatActivity {
         token = pref.getString("token", "");
         grav = pref.getString("grav", "");
         usernameStr = pref.getString("username", "");
-        username.setText(usernameStr);
+        usernameText.setText(usernameStr);
+        rateInt = pref.getInt("rate", 5);
 
-        chgpass.setOnClickListener(new View.OnClickListener() {
+        chgPasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dlg = new Dialog(VIHomeActivity.this);
                 dlg.setContentView(R.layout.change_password_frag);
                 dlg.setTitle("Change Password");
-                chgpassfr = (AppCompatButton) dlg.findViewById(R.id.change_btn);
+                chgpassfrBtn = (AppCompatButton) dlg.findViewById(R.id.change_btn);
 
-                chgpassfr.setOnClickListener(new View.OnClickListener() {
+                chgpassfrBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        oldpass = (AppCompatEditText) dlg.findViewById(R.id.oldpass);
-                        newpass = (AppCompatEditText) dlg.findViewById(R.id.newpass);
-                        oldpasstxt = oldpass.getText().toString();
-                        newpasstxt = newpass.getText().toString();
+                        oldpassEditText = (AppCompatEditText) dlg.findViewById(R.id.oldpass);
+                        newpassEditText = (AppCompatEditText) dlg.findViewById(R.id.newpass);
+                        oldpassStr = oldpassEditText.getText().toString();
+                        newpassStr = newpassEditText.getText().toString();
                         params = new ArrayList<NameValuePair>();
-                        params.add(new BasicNameValuePair("oldpass", oldpasstxt));
-                        params.add(new BasicNameValuePair("newpass", newpasstxt));
+                        params.add(new BasicNameValuePair("oldpass", oldpassStr));
+                        params.add(new BasicNameValuePair("newpass", newpassStr));
                         params.add(new BasicNameValuePair("id", token));
                         ServerRequest sr = new ServerRequest();
                         JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/chgpass", params);
                         if (json != null) {
                             try {
-                                String jsonstr = json.getString("response");
+                                String jsonStr = json.getString("response");
                                 if (json.getBoolean("res")) {
 
                                     dlg.dismiss();
-                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
 
                                 }
                             } catch (JSONException e) {
@@ -108,8 +110,8 @@ public class VIHomeActivity extends AppCompatActivity {
 
                     }
                 });
-                cancel = (AppCompatButton) dlg.findViewById(R.id.cancelbtn);
-                cancel.setOnClickListener(new View.OnClickListener() {
+                cancelBtn = (AppCompatButton) dlg.findViewById(R.id.cancelbtn);
+                cancelBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         dlg.dismiss();
@@ -137,16 +139,75 @@ public class VIHomeActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         friendSpinner.setAdapter(friends);
 
+        topicStr = "General";
+        topicSpinner.setOnItemSelectedListener(this);
 
-        newVideoCall = (AppCompatButton) findViewById(R.id.new_video_call);
-        newVideoCall.setOnClickListener(new View.OnClickListener() {
+
+        newVideoCallBtn = (AppCompatButton) findViewById(R.id.new_video_call);
+        newVideoCallBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
-                startActivity(viVideoActivity);
-                finish();
+                params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("username", usernameStr));
+                params.add(new BasicNameValuePair("topic", topicStr));
+                params.add(new BasicNameValuePair("rate", String.valueOf(rateInt)));
+
+                ServerRequest sr = new ServerRequest();
+                JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/createroom", params);
+                if (json != null) {
+                    try {
+                        String jsonStr = json.getString("response");
+                        Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+                        String roomId = json.getString("roomId");
+                        Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
+                        viVideoActivity.putExtra("sessionId", roomId);
+                        viVideoActivity.putExtra("userId", usernameStr);
+                        startActivity(viVideoActivity);
+                        finish();
+//                        if (json.getBoolean("res")) {
+//
+//                            dlg.dismiss();
+//                            Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+//                        } else {
+//
+//                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
     }
 
+    /**
+     * <p>Callback method to be invoked when an item in this view has been
+     * selected. This callback is invoked only when the newly selected
+     * position is different from the previously selected position or if
+     * there was no selected item.</p>
+     * <p/>
+     * Impelmenters can call getItemAtPosition(position) if they need to access the
+     * data associated with the selected item.
+     *
+     * @param parent   The AdapterView where the selection happened
+     * @param view     The view within the AdapterView that was clicked
+     * @param position The position of the view in the adapter
+     * @param id       The row id of the item that is selected
+     */
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        topicStr = parent.getAdapter().getItem(position).toString();
+//        Toast.makeText(this, topicStr, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Callback method to be invoked when the selection disappears from this
+     * view. The selection can disappear for instance when touch is activated
+     * or when the adapter becomes empty.
+     *
+     * @param parent The AdapterView that now contains no selected item.
+     */
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }

@@ -31,6 +31,13 @@
     <string name="decline_button">Decline</string>
     <string name="connect_hint">Waiting...</string>
 
+    <!-- Helper -->
+    <string name="get_room_list_button">Current Request</string>
+    <string name="empty_list">No Request</string>
+    <string name="room_enter_button">Enter</string>
+    <string name="room_cancel_button">Cancel</string>
+    <string name="room_confirm_message">Start video call with %1$s on topic %2$s?</string>
+
     <!-- Topics -->
     <string-array name="topics_array">
         <item>General</item>

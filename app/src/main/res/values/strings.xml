@@ -21,22 +21,26 @@
     <string name="login_continue_button">Continue</string>
     <string name="logout_button">Logout</string>
 
-    <!-- Home -->
+    <!-- VI Home -->
     <string name="new_video_call_button">New Video Call</string>
     <string name="topic_hint">Choose a topic:</string>
     <string name="friend_hint">Call a friend or anyone?</string>
 
-    <!-- Video -->
+    <!-- VI Video -->
     <string name="accept_button">Accept</string>
     <string name="decline_button">Decline</string>
-    <string name="connect_hint">Waiting...</string>
+    <string name="connect_hint_vi">Waiting for someone to join</string>
+    <string name="connect_start_vi">Start to talk</string>
 
-    <!-- Helper -->
+    <!-- Helper Home -->
     <string name="get_room_list_button">Current Request</string>
     <string name="empty_list">No Request</string>
     <string name="room_enter_button">Enter</string>
     <string name="room_cancel_button">Cancel</string>
     <string name="room_confirm_message">Start video call with %1$s on topic %2$s?</string>
+
+    <!-- Helper Video -->
+    <string name="connect_hint_helper">Waiting for visual impairer to accept</string>
 
     <!-- Topics -->
     <string-array name="topics_array">
@@ -49,4 +53,5 @@
     <string-array name="friends_array">
         <item>Anyone</item>
     </string-array>
+    <string name="title_activity_helper_video">HelperVideoActivity</string>
 </resources>

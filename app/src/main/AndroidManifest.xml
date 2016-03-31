@@ -41,8 +41,12 @@
         <activity
             android:name=".visualimpairer.VIVideoActivity"
             android:label="@string/title_activity_vivideo"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="locked" />
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".helper.HelperVideoActivity"
+            android:label="@string/title_activity_helper_video"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

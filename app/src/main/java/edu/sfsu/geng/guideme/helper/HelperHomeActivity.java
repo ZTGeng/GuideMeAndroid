@@ -13,6 +13,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.ListViewCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ import edu.sfsu.geng.guideme.login.ServerRequest;
 public class HelperHomeActivity extends AppCompatActivity
         implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
 
-//    private static List<JSONObject> emptyList = new ArrayList<>();
+    private static final String TAG = "HelperHome";
 
     SharedPreferences pref;
     String token, grav, usernameStr, oldpassStr, newpassStr, topicStr;
@@ -145,12 +146,7 @@ public class HelperHomeActivity extends AppCompatActivity
         final RoomListAdapter roomListAdapter = new RoomListAdapter(this, -1, new ArrayList<JSONObject>());
         roomList.setAdapter(roomListAdapter);
 
-        roomList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
+        roomList.setOnItemClickListener(this);
 
         getRoomListBtn = (AppCompatButton) findViewById(R.id.get_room_list_btn);
         getRoomListBtn.setOnClickListener(new View.OnClickListener() {
@@ -231,6 +227,7 @@ public class HelperHomeActivity extends AppCompatActivity
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.v(TAG, "onItemClick");
         final JSONObject room = ((RoomListAdapter) parent.getAdapter()).getItem(position);
         try {
             final String roomId = room.getString("roomId");
@@ -254,6 +251,7 @@ public class HelperHomeActivity extends AppCompatActivity
                 }
             });
             AlertDialog dialog = builder.create();
+            dialog.show();
         } catch (JSONException e) {
             e.printStackTrace();
         }

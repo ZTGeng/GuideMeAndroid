@@ -2,6 +2,7 @@ package edu.sfsu.geng.guideme.visualimpairer;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
@@ -82,7 +84,8 @@ public class VIVideoActivity extends AppCompatActivity implements
 
     private AppCompatTextView connectText;
     private AppCompatButton acceptButton, declineButton;
-    FloatingActionButton fab;
+//    FloatingActionButton fab;
+    private FloatingActionButton fabAddFriend;
 
     private SignalingChannel mSignalingChannel;
 //    private InputMethodManager mInputMethodManager;
@@ -94,6 +97,7 @@ public class VIVideoActivity extends AppCompatActivity implements
     private RtcConfig mRtcConfig;
     private String sessionId;
     private String usernameStr;
+    private boolean isNavigation;
 
     private List<NameValuePair> params;
 
@@ -110,31 +114,48 @@ public class VIVideoActivity extends AppCompatActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_vi_video);
         sessionId = getIntent().getStringExtra("sessionId");
+        isNavigation = getIntent().getBooleanExtra("isNavigation", false);
 
         SharedPreferences pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
         usernameStr = pref.getString("username", "");
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fab = (FloatingActionButton) findViewById(R.id.fab);
+        fabAddFriend = (FloatingActionButton) findViewById(R.id.fab_add_friend);
+        if (fabAddFriend != null) {
+            fabAddFriend.setEnabled(false);
+        }
 
         connectText = (AppCompatTextView) findViewById(R.id.connect_text);
         if (connectText != null) {
             connectText.setText(R.string.connect_hint_vi);
         } else {
-            Log.e(TAG, "onCreate: connectText is null!");
+            Log.d(TAG, "onCreate: connectText is null!");
         }
 
         acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
         if (acceptButton != null) {
             acceptButton.setEnabled(false);
+            acceptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onAcceptClicked(v);
+                }
+            });
         } else {
-            Log.e(TAG, "onCreate: acceptButton is null!");
+            Log.d(TAG, "onCreate: acceptButton is null!");
         }
 
         declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
         if (declineButton != null) {
             declineButton.setEnabled(false);
+            declineButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDeclineClicked(v);
+                }
+            });
         } else {
-            Log.e(TAG, "onCreate: declineButton is null!");
+            Log.d(TAG, "onCreate: declineButton is null!");
         }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -154,8 +175,13 @@ public class VIVideoActivity extends AppCompatActivity implements
                                                                  Manifest.permission.CAPTURE_AUDIO_OUTPUT}, LOCATION_PERMISSION);
         }
 
-        createLocationRequest();
-        buildGoogleApiClient(this);
+        if (isNavigation) {
+            createLocationRequest();
+            buildGoogleApiClient(this);
+        } else {
+            View fabGps = findViewById(R.id.fab_gps);
+            if (fabGps != null) fabGps.setVisibility(View.INVISIBLE);
+        }
 
         join();
     }
@@ -169,21 +195,21 @@ public class VIVideoActivity extends AppCompatActivity implements
         if (connectText != null) {
             connectText.setText(R.string.connect_hint_vi);
         } else {
-            Log.e(TAG, "onConfigurationChanged: connectText is null!");
+            Log.d(TAG, "onConfigurationChanged: connectText is null!");
         }
 
         acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
         if (acceptButton != null) {
             acceptButton.setEnabled(false);
         } else {
-            Log.e(TAG, "onConfigurationChanged: acceptButton is null!");
+            Log.d(TAG, "onConfigurationChanged: acceptButton is null!");
         }
 
         declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
         if (declineButton != null) {
             declineButton.setEnabled(false);
         } else {
-            Log.e(TAG, "onConfigurationChanged: declineButton is null!");
+            Log.d(TAG, "onConfigurationChanged: declineButton is null!");
         }
 
         updateVideoView(true);
@@ -195,7 +221,7 @@ public class VIVideoActivity extends AppCompatActivity implements
             if (selfView != null) {
                 selfView.setVisibility(running ? View.VISIBLE : View.INVISIBLE);
             } else {
-                Log.e(TAG, "updateVideoView: selfView is null!");
+                Log.d(TAG, "updateVideoView: selfView is null!");
             }
             if (running) {
                 Log.d(TAG, "setting selfView: " + selfView);
@@ -234,16 +260,31 @@ public class VIVideoActivity extends AppCompatActivity implements
                     }
                 }
             } else {
-                Log.e(TAG, "onAcceptClicked: mStreamSet is null!");
+                Log.d(TAG, "onAcceptClicked: mStreamSet is null!");
             }
         } else {
-            Log.e(TAG, "onAcceptClicked: mRtcSession is null!");
+            Log.d(TAG, "onAcceptClicked: mRtcSession is null!");
         }
     }
 
     public void onDeclineClicked(final View view) {
         Log.d(TAG, "onRefuseClicked");
-        // TODO: tell peer to quit
+        if (mSignalingChannel != null) {
+            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
+        } else {
+            Log.d(TAG, "onDeclineClicked: mSignalingChannel is null!");
+        }
+//        if (mPeerChannel != null) {
+//            try {
+//                JSONObject json = new JSONObject();
+//                json.putOpt("quit", "quit");
+//                mPeerChannel.send(json);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            Log.d(TAG, "onDeclineClicked: mPeerChannel is null!");
+//        }
 //        if (mRtcSession != null) {
 //            mRtcSession.stop();
 //        } else {
@@ -252,14 +293,40 @@ public class VIVideoActivity extends AppCompatActivity implements
         mPeerChannel = null;
         acceptButton.setEnabled(false);
         declineButton.setEnabled(false);
+        fabAddFriend.setEnabled(false);
     }
 
-    public void onFabClicked(final View view) {
+    public void onQuitClicked(final View view) {
         Log.d(TAG, "Floating button onClicked");
+        if (mSignalingChannel != null) {
+            if (mPeerChannel != null) {
+                mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
+            }
+            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+        } else {
+            Log.d(TAG, "onFabClicked: mSignalingChannel is null!");
+        }
 //        onDisconnect();
-        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
-        startActivity(homeActivity);
-        finish();
+//        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
+//        startActivity(homeActivity);
+//        finish();
+    }
+
+    public void onAddFriend(final View view) {
+        if (mPeerChannel != null) {
+            // TODO check already friends
+            try {
+                JSONObject json = new JSONObject();
+                json.putOpt("add", usernameStr);
+                mPeerChannel.send(json);
+                Toast.makeText(getApplication(), R.string.add_friend_send_message, Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.d(TAG, "onAddFriend: mPeerChannel is null!");
+        }
+
     }
 
 //    public void onSelfViewClicked(final View view) {
@@ -311,6 +378,7 @@ public class VIVideoActivity extends AppCompatActivity implements
         connectText.setText(message);
         acceptButton.setEnabled(true);
         declineButton.setEnabled(true);
+        fabAddFriend.setEnabled(true);
     }
 
     @Override
@@ -319,10 +387,14 @@ public class VIVideoActivity extends AppCompatActivity implements
         if (mRtcSession != null) {
             mRtcSession.stop();
         } else {
-            Log.e(TAG, "onPeerDisconnect: mRtcSession is null!");
+            Log.d(TAG, "onPeerDisconnect: mRtcSession is null!");
         }
         mPeerChannel = null;
         updateVideoView(false);
+
+        connectText.setText(R.string.connect_hint_vi);
+        acceptButton.setEnabled(false);
+        declineButton.setEnabled(false);
     }
 
     @Override
@@ -349,7 +421,7 @@ public class VIVideoActivity extends AppCompatActivity implements
                         onAnswer(sessionDescription);
                     }
                 } else {
-                    Log.e(TAG, "onMessage: seesionDescription is null!");
+                    Log.d(TAG, "onMessage: seesionDescription is null!");
                 }
             } catch (InvalidDescriptionException e) {
                 e.printStackTrace();
@@ -358,6 +430,71 @@ public class VIVideoActivity extends AppCompatActivity implements
 //        if (json.has("orientation")) {
 //                handleOrientation(json.getInt("orientation"));
 //        }
+        if (json.has("add")) {
+            Log.v(TAG, "Add Friend Request!");
+            try {
+                final String friendName = json.getString("add");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(String.format(getResources().getString(R.string.add_friend_confirm_message), friendName));
+                builder.setPositiveButton(R.string.add_friend_ok_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("m_username", usernameStr));
+                        params.add(new BasicNameValuePair("f_username", friendName));
+
+                        ServerRequest sr = new ServerRequest();
+                        JSONObject jsonRes = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/addfriend", params);
+
+                        if (jsonRes != null) {
+                            try {
+                                String jsonStr = jsonRes.getString("response");
+                                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        try {
+                            JSONObject jsonBack = new JSONObject();
+                            jsonBack.putOpt("added", true);
+                            jsonBack.putOpt("name", usernameStr);
+                            mPeerChannel.send(jsonBack);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                builder.setNegativeButton(R.string.add_friend_cancel_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            JSONObject jsonBack = new JSONObject();
+                            jsonBack.putOpt("added", false);
+                            mPeerChannel.send(jsonBack);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (json.has("added")) {
+            try {
+                boolean success = json.getBoolean("added");
+                String name = json.getString("name");
+                if (success) {
+                    String message = String.format(getResources().getString(R.string.add_friend_accept), name);
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -373,7 +510,7 @@ public class VIVideoActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         } else {
-            Log.e(TAG, "onLocalCandidate: mPeerChannel is null!");
+            Log.d(TAG, "onLocalCandidate: mPeerChannel is null!");
         }
     }
 
@@ -387,10 +524,11 @@ public class VIVideoActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         } else {
-            Log.e(TAG, "onInboundCall: mRtcSession is null!");
+            Log.d(TAG, "onInboundCall: mRtcSession is null!");
         }
     }
 
+    // Use this method
     private void onAnswer(final SessionDescription sessionDescription) {
         Log.d(TAG, "onAnswer");
         if (mRtcSession != null) {
@@ -400,7 +538,7 @@ public class VIVideoActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         } else {
-            Log.e(TAG, "onAnswer: mRtcSession is null!");
+            Log.d(TAG, "onAnswer: mRtcSession is null!");
         }
     }
 
@@ -420,7 +558,7 @@ public class VIVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onDisconnect() {
-        Log.v(TAG, "onDisconnect");
+        Log.d(TAG, "onDisconnect");
         Toast.makeText(this, "Disconnected from server", Toast.LENGTH_LONG).show();
         updateVideoView(false);
         mStreamSet = null;
@@ -444,6 +582,9 @@ public class VIVideoActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         }
+
+        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
+        startActivity(homeActivity);
     }
 
     @Override
@@ -452,33 +593,57 @@ public class VIVideoActivity extends AppCompatActivity implements
     }
 
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        stopLocationUpdates();
-//    }
-//
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isNavigation)
+            stopLocationUpdates();
+    }
+
     /**
      * Shutdown the process as a workaround until cleanup has been fully implemented.
      */
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop");
         super.onStop();
 //        if (mRtcSession != null) {
 //            mRtcSession.stop();
 //        }
 //        mPeerChannel = null;
-        onDisconnect();
-        finish();
+//        onDisconnect();
+//        finish();
 //        System.exit(0);
+//        mSignalingChannel = null;
+//        if (mRtcSession != null) {
+//            mRtcSession.stop();
+//        }
+//        mPeerChannel = null;
+//        if (mSignalingChannel != null) {
+//            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+//        } else {
+//            Log.d(TAG, "onStop: mSignalingChannel is null!");
+//        }
     }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        startLocationUpdates();
+
+    @Override
+    public void onBackPressed() {
+        onQuitClicked(findViewById(R.id.fab_quit));
+    }
+
+//    protected void onDestroy() {
+//        Log.d(TAG, "onDestroy");
+//        System.out.println("mSignalingChannel is null? " + (mSignalingChannel == null));
+//        super.onDestroy();
 //    }
-//
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isNavigation)
+            startLocationUpdates();
+    }
+
 
     /**
      * Build Google API Client for use to get current location
@@ -509,9 +674,6 @@ public class VIVideoActivity extends AppCompatActivity implements
     protected void startLocationUpdates() {
         if (mGoogleApiClient == null) {
             buildGoogleApiClient(this);
-            if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.connect();
-            }
         }
         else if (!mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
@@ -519,16 +681,17 @@ public class VIVideoActivity extends AppCompatActivity implements
         //only when current fragment is being viewed and location permission is granted
         else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            Log.d(TAG, "Location is updating...");
         }
     }
 
-//    /**
-//     * Removes location updates from the FusedLocationApi.
-//     */
-//    protected void stopLocationUpdates() {
-//        if(mGoogleApiClient!=null && mGoogleApiClient.isConnected())
-//            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-//    }
+    /**
+     * Removes location updates from the FusedLocationApi.
+     */
+    protected void stopLocationUpdates() {
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
 
     /**
      * Start location update when Google API Client is connected
@@ -567,6 +730,7 @@ public class VIVideoActivity extends AppCompatActivity implements
     }
 
     private void sendLocation(String latitude, String longitude) {
+        Log.d(TAG, "Send lat and lng!");
         if (mPeerChannel != null) {
             try {
                 JSONObject json = new JSONObject();
@@ -577,6 +741,11 @@ public class VIVideoActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         }
+    }
+
+    public void onStopSendLocation(View view) {
+        Log.d(TAG, "onStopSendLocation");
+        stopLocationUpdates();
     }
 
 //    @Override

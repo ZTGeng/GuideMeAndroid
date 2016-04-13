@@ -104,6 +104,25 @@ public class SignalingChannel {
         }).start();
     }
 
+    public void kickoff(String baseUrl, String session, String peerId) {
+        final String mKickoffUrl = baseUrl + "/kickoff/" + session + "/" + peerId;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(mKickoffUrl);
+
+                try {
+                    HttpResponse httpResponse = httpClient.execute(httpGet);
+                    HttpEntity httpEntity = httpResponse.getEntity();
+                } catch (IOException exception) {
+                    Log.e(TAG, "Kickoff Error: " + exception);
+                    exception.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     private void readEventStream(final BufferedReader bufferedReader) throws IOException {
         String line;
         while ((line = bufferedReader.readLine()) != null) {
@@ -157,12 +176,17 @@ public class SignalingChannel {
             if (peerChannel != null) {
                 peerChannel.onDisconnect();
             }
+        } else if (event.equals("kicked")) {
+            if (mDisconnectListener != null) {
+                mDisconnectListener.onDisconnect();
+            }
         } else if (event.equals("sessionfull")) {
             if (mSessionFullListener != null) {
                 mSessionFullListener.onSessionFull();
             }
         } else {
             Log.w(TAG, "unhandled event: " + event);
+
         }
     }
 

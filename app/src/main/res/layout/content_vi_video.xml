@@ -43,7 +43,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onDeclineClicked"
                 android:text="@string/decline_button" />
 
             <android.support.v7.widget.AppCompatButton
@@ -51,7 +50,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onAcceptClicked"
                 android:text="@string/accept_button" />
 
         </android.support.v7.widget.LinearLayoutCompat>

@@ -10,12 +10,21 @@
     <include layout="@layout/content_helper_video" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_add_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_menu_add"
+        android:onClick="onAddFriend"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_quit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
-        android:onClick="onFabClicked"/>
+        android:onClick="onQuitClicked"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -239,8 +239,8 @@ public class HelperHomeActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int id) {
                     Intent helperVideoActivity = new Intent(HelperHomeActivity.this, HelperVideoActivity.class);
                     helperVideoActivity.putExtra("sessionId", roomId);
-                    helperVideoActivity.putExtra("userId", usernameStr);
-                    helperVideoActivity.putExtra("navigation", topic.equals("Navigation"));
+//                    helperVideoActivity.putExtra("userId", usernameStr);
+                    helperVideoActivity.putExtra("isNavigation", topic.equals("Navigation"));
                     startActivity(helperVideoActivity);
                     finish();
                 }

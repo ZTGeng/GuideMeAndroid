@@ -161,7 +161,8 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
                         String roomId = json.getString("roomId");
                         Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
                         viVideoActivity.putExtra("sessionId", roomId);
-                        viVideoActivity.putExtra("userId", usernameStr);
+//                        viVideoActivity.putExtra("userId", usernameStr);
+                        viVideoActivity.putExtra("isNavigation", topicStr.equals("Navigation"));
                         startActivity(viVideoActivity);
                         finish();
 //                        if (json.getBoolean("res")) {

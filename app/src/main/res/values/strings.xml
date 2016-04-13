@@ -42,6 +42,14 @@
     <!-- Helper Video -->
     <string name="connect_hint_helper">Waiting for visual impairer to accept</string>
 
+    <!-- Add Friend -->
+    <string name="add_friend_confirm_message">%1$s wants to add you as a friend</string>
+    <string name="add_friend_ok_button">OK</string>
+    <string name="add_friend_cancel_button">Cancel</string>
+    <string name="add_friend_send_message">Adding friend request is sent</string>
+    <string name="add_friend_accept">You added %1$s as a friend</string>
+    <!--<string name="add_friend_refuse">You didn't add %1$s as a friend</string>-->
+
     <!-- Topics -->
     <string-array name="topics_array">
         <item>General</item>

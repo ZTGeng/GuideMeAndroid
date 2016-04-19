@@ -155,6 +155,7 @@ public class HelperHomeActivity extends AppCompatActivity
                 roomListAdapter.clear();
 
                 params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("id", token));
                 params.add(new BasicNameValuePair("topic", topicStr));
                 ServerRequest sr = new ServerRequest();
                 JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/getroomlist", params);
@@ -284,11 +285,13 @@ public class HelperHomeActivity extends AppCompatActivity
             AppCompatTextView usernameText = (AppCompatTextView) rowView.findViewById(R.id.room_item_username);
             RatingBar ratingBar = (RatingBar) rowView.findViewById(R.id.room_item_ratingBar);
             AppCompatTextView topicText = (AppCompatTextView) rowView.findViewById(R.id.room_item_topic);
+            AppCompatTextView tagsText = (AppCompatTextView) rowView.findViewById(R.id.room_item_tags);
 
             try {
                 JSONObject room = rooms.get(position);
                 usernameText.setText(room.getString("username"));
                 topicText.setText(room.getString("topic"));
+                tagsText.setText(room.getString("tags"));
                 int rateInt = Integer.parseInt(room.getString("rate"));
                 ratingBar.setRating(rateInt);
             } catch (JSONException e) {

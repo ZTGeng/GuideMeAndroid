@@ -24,6 +24,7 @@
     <!-- VI Home -->
     <string name="new_video_call_button">New Video Call</string>
     <string name="topic_hint">Choose a topic:</string>
+    <string name="tag_hint">(Optional) Input 3 or less tags (separated with \",\"):</string>
     <string name="friend_hint">Call a friend or anyone?</string>
 
     <!-- VI Video -->
@@ -31,6 +32,13 @@
     <string name="decline_button">Decline</string>
     <string name="connect_hint_vi">Waiting for someone to join</string>
     <string name="connect_start_vi">Start to talk</string>
+    <string name="quit_button">STOP</string>
+    <string name="quit_confirm_message">Are you leaving?</string>
+    <string name="quit_confirm_button">YES</string>
+    <string name="quit_cancel_button">Cancel</string>
+    <string name="toggle_location_button_on">Helper can see your Location</string>
+    <string name="toggle_location_button_off">Helper cannot see your Location</string>
+    <string name="add_friend_button">Add friend</string>
 
     <!-- Helper Home -->
     <string name="get_room_list_button">Current Request</string>
@@ -43,6 +51,7 @@
     <string name="connect_hint_helper">Waiting for visual impairer to accept</string>
 
     <!-- Add Friend -->
+    <string name="send_request_confirm_message">Add %1$s as a friend?</string>
     <string name="add_friend_confirm_message">%1$s wants to add you as a friend</string>
     <string name="add_friend_ok_button">OK</string>
     <string name="add_friend_cancel_button">Cancel</string>

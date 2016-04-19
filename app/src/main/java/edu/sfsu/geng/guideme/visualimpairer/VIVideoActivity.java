@@ -85,7 +85,11 @@ public class VIVideoActivity extends AppCompatActivity implements
     private AppCompatTextView connectText;
     private AppCompatButton acceptButton, declineButton;
 //    FloatingActionButton fab;
-    private FloatingActionButton fabAddFriend;
+//    private FloatingActionButton fabAddFriend;
+    private AppCompatButton quitButton;
+    private AppCompatButton toggleLocationButton;
+    private AppCompatButton addFriendButton;
+    private boolean isSendingLocation;
 
     private SignalingChannel mSignalingChannel;
 //    private InputMethodManager mInputMethodManager;
@@ -120,10 +124,39 @@ public class VIVideoActivity extends AppCompatActivity implements
         usernameStr = pref.getString("username", "");
 
         //fab = (FloatingActionButton) findViewById(R.id.fab);
-        fabAddFriend = (FloatingActionButton) findViewById(R.id.fab_add_friend);
-        if (fabAddFriend != null) {
-            fabAddFriend.setEnabled(false);
+//        fabAddFriend = (FloatingActionButton) findViewById(R.id.fab_add_friend);
+//        if (fabAddFriend != null) {
+//            fabAddFriend.setEnabled(false);
+//        }
+        quitButton = (AppCompatButton) findViewById(R.id.quit_btn);
+        if (quitButton != null) {
+            quitButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onQuitClicked(v);
+                }
+            });
         }
+        toggleLocationButton = (AppCompatButton) findViewById(R.id.toggle_location_btn);
+        if (toggleLocationButton != null) {
+            toggleLocationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onToggleSendLocation(v);
+                }
+            });
+        }
+        addFriendButton = (AppCompatButton) findViewById(R.id.add_friend_btn);
+        if (addFriendButton != null) {
+            addFriendButton.setEnabled(false);
+            addFriendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onAddFriend(v);
+                }
+            });
+        }
+        isSendingLocation = true;
 
         connectText = (AppCompatTextView) findViewById(R.id.connect_text);
         if (connectText != null) {
@@ -169,6 +202,7 @@ public class VIVideoActivity extends AppCompatActivity implements
          || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
          || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)                 != PackageManager.PERMISSION_GRANTED
          || ContextCompat.checkSelfPermission(this, Manifest.permission.CAPTURE_AUDIO_OUTPUT)   != PackageManager.PERMISSION_GRANTED) {
+//         || ContextCompat.checkSelfPermission(this, Manifest.permission.)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                                                  Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                                                  Manifest.permission.CAMERA,
@@ -179,60 +213,71 @@ public class VIVideoActivity extends AppCompatActivity implements
             createLocationRequest();
             buildGoogleApiClient(this);
         } else {
-            View fabGps = findViewById(R.id.fab_gps);
-            if (fabGps != null) fabGps.setVisibility(View.INVISIBLE);
+            isSendingLocation = false;
+            if (toggleLocationButton != null) {
+                toggleLocationButton.setVisibility(View.INVISIBLE);
+            }
+//            View fabGps = findViewById(R.id.fab_gps);
+//            if (fabGps != null) fabGps.setVisibility(View.INVISIBLE);
         }
 
         join();
     }
 
-    @Override
-    public void onConfigurationChanged(final Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        setContentView(R.layout.activity_vi_video);
-
-        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
-        if (connectText != null) {
-            connectText.setText(R.string.connect_hint_vi);
-        } else {
-            Log.d(TAG, "onConfigurationChanged: connectText is null!");
-        }
-
-        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
-        if (acceptButton != null) {
-            acceptButton.setEnabled(false);
-        } else {
-            Log.d(TAG, "onConfigurationChanged: acceptButton is null!");
-        }
-
-        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
-        if (declineButton != null) {
-            declineButton.setEnabled(false);
-        } else {
-            Log.d(TAG, "onConfigurationChanged: declineButton is null!");
-        }
-
-        updateVideoView(true);
-    }
+//    @Override
+//    public void onConfigurationChanged(final Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        setContentView(R.layout.activity_vi_video);
+//
+//        quitButton = (AppCompatButton) findViewById(R.id.quit_btn);
+//        toggleLocationButton = (AppCompatButton) findViewById(R.id.toggle_location_btn);
+//        addFriendButton = (AppCompatButton) findViewById(R.id.add_friend_btn);
+//        if (addFriendButton != null) {
+//            addFriendButton.setEnabled(false);
+//        }
+//
+//        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
+//        if (connectText != null) {
+//            connectText.setText(R.string.connect_hint_vi);
+//        } else {
+//            Log.d(TAG, "onConfigurationChanged: connectText is null!");
+//        }
+//
+//        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
+//        if (acceptButton != null) {
+//            acceptButton.setEnabled(false);
+//        } else {
+//            Log.d(TAG, "onConfigurationChanged: acceptButton is null!");
+//        }
+//
+//        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
+//        if (declineButton != null) {
+//            declineButton.setEnabled(false);
+//        } else {
+//            Log.d(TAG, "onConfigurationChanged: declineButton is null!");
+//        }
+//
+//        updateVideoView(true);
+//    }
 
     private void updateVideoView(boolean running) {
-        if (mStreamSet != null) {
-            TextureView selfView = (TextureView) findViewById(R.id.self_view);
-            if (selfView != null) {
-                selfView.setVisibility(running ? View.VISIBLE : View.INVISIBLE);
-            } else {
-                Log.d(TAG, "updateVideoView: selfView is null!");
-            }
-            if (running) {
-                Log.d(TAG, "setting selfView: " + selfView);
-                mSelfView.setView(selfView);
-            } else {
-                Log.d(TAG, "stopping selfView");
-                mSelfView.stop();
-            }
-        } else {
-            Log.e(TAG, "updateVideoView: mStreamSet is null!");
-        }
+//        if (mStreamSet != null) {
+//            TextureView selfView = (TextureView) findViewById(R.id.self_view);
+//            if (selfView != null) {
+//                selfView.setVisibility(running ? View.VISIBLE : View.INVISIBLE);
+//            } else {
+//                Log.d(TAG, "updateVideoView: selfView is null!");
+//            }
+//            if (running) {
+//                Log.d(TAG, "setting selfView: " + selfView);
+//                mSelfView.setView(selfView);
+//            } else {
+//                Log.d(TAG, "stopping selfView");
+//                mSelfView.stop();
+//            }
+//        } else {
+//            Log.e(TAG, "updateVideoView: mStreamSet is null!");
+//        }
     }
 
 
@@ -274,30 +319,35 @@ public class VIVideoActivity extends AppCompatActivity implements
         } else {
             Log.d(TAG, "onDeclineClicked: mSignalingChannel is null!");
         }
-//        if (mPeerChannel != null) {
-//            try {
-//                JSONObject json = new JSONObject();
-//                json.putOpt("quit", "quit");
-//                mPeerChannel.send(json);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            Log.d(TAG, "onDeclineClicked: mPeerChannel is null!");
-//        }
-//        if (mRtcSession != null) {
-//            mRtcSession.stop();
-//        } else {
-//            Log.d(TAG, "onAcceptClicked: mRtcSession is null!");
-//        }
         mPeerChannel = null;
         acceptButton.setEnabled(false);
         declineButton.setEnabled(false);
-        fabAddFriend.setEnabled(false);
+//        fabAddFriend.setEnabled(false);
+        addFriendButton.setEnabled(false);
     }
 
     public void onQuitClicked(final View view) {
-        Log.d(TAG, "Floating button onClicked");
+        Log.d(TAG, "Quit button onClicked");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.quit_confirm_message);
+        builder.setPositiveButton(R.string.quit_confirm_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                quit();
+            }
+        });
+        builder.setNegativeButton(R.string.quit_cancel_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void quit() {
+        Log.d(TAG, "Quit");
         if (mSignalingChannel != null) {
             if (mPeerChannel != null) {
                 mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
@@ -315,39 +365,39 @@ public class VIVideoActivity extends AppCompatActivity implements
     public void onAddFriend(final View view) {
         if (mPeerChannel != null) {
             // TODO check already friends
-            try {
-                JSONObject json = new JSONObject();
-                json.putOpt("add", usernameStr);
-                mPeerChannel.send(json);
-                Toast.makeText(getApplication(), R.string.add_friend_send_message, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
+            builder.setPositiveButton(R.string.add_friend_ok_button, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addFriendButton.setEnabled(false);
+                    try {
+                        JSONObject json = new JSONObject();
+                        json.putOpt("add", usernameStr);
+                        mPeerChannel.send(json);
+                        Toast.makeText(getApplication(), R.string.add_friend_send_message, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            builder.setNegativeButton(R.string.add_friend_cancel_button, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         } else {
             Log.d(TAG, "onAddFriend: mPeerChannel is null!");
         }
-
     }
 
-//    public void onSelfViewClicked(final View view) {
-//        Log.d(TAG, "onSelfViewClicked");
-//        if (mStreamSet != null) {
-//            if (mSelfView != null) {
-//                mSelfView.setRotation((mSelfView.getRotation() + 1) % 4);
-//            }
-//        }
-//    }
-
-//    private String getRandomSessionId() {
-//        Random random = new Random();
-//        return String.valueOf(random.nextInt(10000000));
-//    }
 
     private void join() {
         Log.d(TAG, "onJoin");
-
-//        String sessionId = getRandomSessionId();
-//        connectText.setText(connectText.getText() + sessionId); // <- for test only
 
         mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
         mSignalingChannel.setJoinListener(this);
@@ -358,9 +408,8 @@ public class VIVideoActivity extends AppCompatActivity implements
         //select back camera
         CameraSource.getInstance().selectSource(1);
 
-        mSelfView = CameraSource.getInstance().createVideoView();
-        mSelfView.setRotation((mSelfView.getRotation() + 3) % 4);
-//        updateVideoView(true);
+//        mSelfView = CameraSource.getInstance().createVideoView();
+//        mSelfView.setRotation((mSelfView.getRotation() + 3) % 4);
     }
 
     @Override
@@ -378,7 +427,8 @@ public class VIVideoActivity extends AppCompatActivity implements
         connectText.setText(message);
         acceptButton.setEnabled(true);
         declineButton.setEnabled(true);
-        fabAddFriend.setEnabled(true);
+//        fabAddFriend.setEnabled(true);
+        addFriendButton.setEnabled(true);
     }
 
     @Override
@@ -395,6 +445,7 @@ public class VIVideoActivity extends AppCompatActivity implements
         connectText.setText(R.string.connect_hint_vi);
         acceptButton.setEnabled(false);
         declineButton.setEnabled(false);
+        addFriendButton.setEnabled(false);
     }
 
     @Override
@@ -486,8 +537,8 @@ public class VIVideoActivity extends AppCompatActivity implements
         if (json.has("added")) {
             try {
                 boolean success = json.getBoolean("added");
-                String name = json.getString("name");
                 if (success) {
+                    String name = json.getString("name");
                     String message = String.format(getResources().getString(R.string.add_friend_accept), name);
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
                 }
@@ -596,7 +647,7 @@ public class VIVideoActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        if (isNavigation)
+        if (isNavigation && isSendingLocation)
             stopLocationUpdates();
     }
 
@@ -607,40 +658,19 @@ public class VIVideoActivity extends AppCompatActivity implements
     protected void onStop() {
         Log.d(TAG, "onStop");
         super.onStop();
-//        if (mRtcSession != null) {
-//            mRtcSession.stop();
-//        }
-//        mPeerChannel = null;
-//        onDisconnect();
-//        finish();
-//        System.exit(0);
-//        mSignalingChannel = null;
-//        if (mRtcSession != null) {
-//            mRtcSession.stop();
-//        }
-//        mPeerChannel = null;
-//        if (mSignalingChannel != null) {
-//            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
-//        } else {
-//            Log.d(TAG, "onStop: mSignalingChannel is null!");
-//        }
     }
 
     @Override
     public void onBackPressed() {
-        onQuitClicked(findViewById(R.id.fab_quit));
+        quit();
+//        onQuitClicked(findViewById(R.id.quit_btn));
     }
 
-//    protected void onDestroy() {
-//        Log.d(TAG, "onDestroy");
-//        System.out.println("mSignalingChannel is null? " + (mSignalingChannel == null));
-//        super.onDestroy();
-//    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(isNavigation)
+        if(isNavigation && isSendingLocation)
             startLocationUpdates();
     }
 
@@ -743,9 +773,17 @@ public class VIVideoActivity extends AppCompatActivity implements
         }
     }
 
-    public void onStopSendLocation(View view) {
-        Log.d(TAG, "onStopSendLocation");
-        stopLocationUpdates();
+    public void onToggleSendLocation(View view) {
+        Log.d(TAG, "onToggleSendLocation");
+        if (isSendingLocation) {
+            stopLocationUpdates();
+            toggleLocationButton.setText(R.string.toggle_location_button_off);
+            isSendingLocation = false;
+        } else {
+            startLocationUpdates();
+            toggleLocationButton.setText(R.string.toggle_location_button_on);
+            isSendingLocation = true;
+        }
     }
 
 //    @Override

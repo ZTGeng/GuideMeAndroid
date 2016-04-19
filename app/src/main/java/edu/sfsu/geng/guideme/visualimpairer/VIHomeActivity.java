@@ -38,6 +38,7 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
     List<NameValuePair> params;
     AppCompatTextView usernameText;
     AppCompatSpinner topicSpinner;
+    AppCompatEditText tagEditText;
     AppCompatSpinner friendSpinner;
 
     @Override
@@ -130,6 +131,8 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
         // Apply the adapter to the spinner
         topicSpinner.setAdapter(adapter);
 
+        tagEditText = (AppCompatEditText) findViewById(R.id.tag);
+
         friendSpinner = (AppCompatSpinner) findViewById(R.id.friend_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> friends = ArrayAdapter.createFromResource(this,
@@ -147,9 +150,26 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
         newVideoCallBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String tagStr = tagEditText.getText().toString().trim();
+                String[] tags = tagStr.split(",", 4);
+                String tagJoin = "";
+                for (int i = 0; i < Math.min(tags.length, 3); i++) {
+                    String aTag = tags[i].trim();
+                    if (aTag.length() == 0) continue;
+                    if (aTag.length() > 10) {
+                        aTag = aTag.substring(0, 10).trim();
+                    }
+                    tagJoin += aTag;
+                    tagJoin += ",";
+                }
+                if (tagJoin.length() > 0) {
+                    tagJoin = tagJoin.substring(0, tagJoin.length() - 1);
+                }
+
                 params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("username", usernameStr));
                 params.add(new BasicNameValuePair("topic", topicStr));
+                params.add(new BasicNameValuePair("tags", tagJoin));
                 params.add(new BasicNameValuePair("rate", String.valueOf(rateInt)));
 
                 ServerRequest sr = new ServerRequest();

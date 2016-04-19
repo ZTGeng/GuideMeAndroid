@@ -69,12 +69,27 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/friend_hint"/>
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/friend_spinner"
+            android:text="@string/tag_hint"/>
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/tag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     </android.support.v7.widget.LinearLayoutCompat>
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/friend_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="154dp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/friend_hint"
+        android:layout_above="@+id/friend_spinner"
+        android:layout_alignParentLeft="true" />
 
 </RelativeLayout>

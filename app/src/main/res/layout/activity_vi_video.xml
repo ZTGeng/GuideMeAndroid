@@ -9,6 +9,7 @@
 
     <include layout="@layout/content_vi_video" />
 
+    <!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_friend"
         android:layout_width="wrap_content"
@@ -35,5 +36,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:onClick="onQuitClicked"/>
+    -->
 
 </android.support.design.widget.CoordinatorLayout>

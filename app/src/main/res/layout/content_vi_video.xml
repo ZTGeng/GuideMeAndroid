@@ -34,7 +34,7 @@
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#88ffffff"
+            android:layout_marginBottom="50dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -54,13 +54,31 @@
 
         </android.support.v7.widget.LinearLayoutCompat>
 
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/quit_btn"
+            android:text="@string/quit_button" />
 
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/toggle_location_btn"
+            android:text="@string/toggle_location_button_on" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/add_friend_btn"
+            android:text="@string/add_friend_button" />
+        <!--
         <TextureView
             android:id="@+id/self_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:visibility="invisible" />
+        -->
 
     </android.support.v7.widget.LinearLayoutCompat>
 

@@ -203,7 +203,27 @@ public class HelperVideoActivity extends AppCompatActivity implements
     }
 
     public void onQuitClicked(final View view) {
-        Log.d(TAG, "Floating button onClicked");
+        Log.d(TAG, "Quit button onClicked");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.quit_confirm_message);
+        builder.setPositiveButton(R.string.quit_confirm_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                quit();
+            }
+        });
+        builder.setNegativeButton(R.string.quit_cancel_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void quit() {
+        Log.d(TAG, "Quit");
         if (mSignalingChannel != null) {
             mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
         } else {
@@ -219,18 +239,34 @@ public class HelperVideoActivity extends AppCompatActivity implements
     public void onAddFriend(final View view) {
         if (mPeerChannel != null) {
             // TODO check already friends
-            try {
-                JSONObject json = new JSONObject();
-                json.putOpt("add", usernameStr);
-                mPeerChannel.send(json);
-                Toast.makeText(getApplication(), R.string.add_friend_send_message, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
+            builder.setPositiveButton(R.string.add_friend_ok_button, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    fabAddFriend.setEnabled(false);
+                    try {
+                        JSONObject json = new JSONObject();
+                        json.putOpt("add", usernameStr);
+                        mPeerChannel.send(json);
+                        Toast.makeText(getApplication(), R.string.add_friend_send_message, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            builder.setNegativeButton(R.string.add_friend_cancel_button, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         } else {
             Log.d(TAG, "onAddFriend: mPeerChannel is null!");
         }
-
     }
 
     public void onRemoteViewClicked(final View view) {
@@ -513,7 +549,8 @@ public class HelperVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        onQuitClicked(findViewById(R.id.fab_quit));
+        quit();
+//        onQuitClicked(findViewById(R.id.fab_quit));
     }
 //
 //    @Override

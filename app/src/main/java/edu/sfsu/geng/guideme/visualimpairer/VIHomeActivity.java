@@ -9,6 +9,10 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,38 +36,27 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
     SharedPreferences pref;
     String token, grav, usernameStr, oldpassStr, newpassStr, topicStr;
     int rateInt;
-    AppCompatButton chgPasswordBtn, chgpassfrBtn, cancelBtn, logoutBtn, newVideoCallBtn;
+    AppCompatButton chgpassfrBtn, cancelBtn, callPublicBtn, callFriendsBtn;
     Dialog dlg;
     AppCompatEditText oldpassEditText, newpassEditText;
     List<NameValuePair> params;
     AppCompatTextView usernameText;
     AppCompatSpinner topicSpinner;
     AppCompatEditText tagEditText;
-    AppCompatSpinner friendSpinner;
+//    AppCompatSpinner friendSpinner;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vi_home);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         usernameText = (AppCompatTextView) findViewById(R.id.username_text);
-        chgPasswordBtn = (AppCompatButton)findViewById(R.id.change_btn);
-        logoutBtn = (AppCompatButton)findViewById(R.id.logout);
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor edit = pref.edit();
-                //Storing Data using SharedPreferences
-                edit.putString("token", "");
-                edit.commit();
-                Intent loginactivity = new Intent(VIHomeActivity.this, LoginActivity.class);
-
-                startActivity(loginactivity);
-                finish();
-            }
-        });
 
         pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
         token = pref.getString("token", "");
@@ -72,9 +65,148 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
         usernameText.setText(usernameStr);
         rateInt = pref.getInt("rate", 5);
 
-        chgPasswordBtn.setOnClickListener(new View.OnClickListener() {
+        topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.topics_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        topicSpinner.setAdapter(adapter);
+
+        tagEditText = (AppCompatEditText) findViewById(R.id.tag);
+
+//        friendSpinner = (AppCompatSpinner) findViewById(R.id.friend_spinner);
+//        // Create an ArrayAdapter using the string array and a default spinner layout
+//        ArrayAdapter<CharSequence> friends = ArrayAdapter.createFromResource(this,
+//                R.array.friends_array, android.R.layout.simple_spinner_item);
+//        // Specify the layout to use when the list of choices appears
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        // Apply the adapter to the spinner
+//        friendSpinner.setAdapter(friends);
+
+        topicStr = "General";
+        topicSpinner.setOnItemSelectedListener(this);
+
+
+        callPublicBtn = (AppCompatButton) findViewById(R.id.call_public_btn);
+        callPublicBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                String tagStr = tagEditText.getText().toString().trim();
+                String[] tags = tagStr.split(",", 4);
+                String tagJoin = "";
+                for (int i = 0; i < Math.min(tags.length, 3); i++) {
+                    String aTag = tags[i].trim();
+                    if (aTag.length() == 0) continue;
+                    if (aTag.length() > 10) {
+                        aTag = aTag.substring(0, 10).trim();
+                    }
+                    tagJoin += aTag;
+                    tagJoin += ",";
+                }
+                if (tagJoin.length() > 0) {
+                    tagJoin = tagJoin.substring(0, tagJoin.length() - 1);
+                }
+
+                params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("username", usernameStr));
+                params.add(new BasicNameValuePair("topic", topicStr));
+                params.add(new BasicNameValuePair("tags", tagJoin));
+                params.add(new BasicNameValuePair("rate", String.valueOf(rateInt)));
+
+                ServerRequest sr = new ServerRequest();
+                JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/createroom", params);
+                if (json != null) {
+                    try {
+                        String jsonStr = json.getString("response");
+                        Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+                        String roomId = json.getString("roomId");
+                        Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
+                        viVideoActivity.putExtra("sessionId", roomId);
+                        viVideoActivity.putExtra("isNavigation", topicStr.equals("Navigation"));
+                        startActivity(viVideoActivity);
+                        finish();
+//                        if (json.getBoolean("res")) {
+//
+//                            dlg.dismiss();
+//                            Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+//                        } else {
+//
+//                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        callFriendsBtn = (AppCompatButton) findViewById(R.id.call_friends_btn);
+        callFriendsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("username", usernameStr));
+                params.add(new BasicNameValuePair("topic", topicStr));
+//                params.add(new BasicNameValuePair("tags", tagJoin));
+                params.add(new BasicNameValuePair("rate", String.valueOf(rateInt)));
+
+                ServerRequest sr = new ServerRequest();
+                JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/createroom", params);
+                if (json != null) {
+                    try {
+                        String jsonStr = json.getString("response");
+                        Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+                        String roomId = json.getString("roomId");
+
+                        boolean isNavigation = topicStr.equals("Navigation");
+
+                        params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("id", token));
+                        params.add(new BasicNameValuePair("roomId", roomId));
+                        params.add(new BasicNameValuePair("isNavigation", String.valueOf(isNavigation)));
+                        ServerRequest sr2 = new ServerRequest();
+                        JSONObject json2 = sr2.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/callfriends", params);
+
+                        if (json2 != null) {
+                            try {
+                                if (json2.getBoolean("res")) {
+                                    Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
+                                    viVideoActivity.putExtra("sessionId", roomId);
+                                    viVideoActivity.putExtra("isNavigation", isNavigation);
+                                    startActivity(viVideoActivity);
+                                    finish();
+                                } else {
+                                    params = new ArrayList<NameValuePair>();
+                                    params.add(new BasicNameValuePair("username", usernameStr));
+                                    ServerRequest sr3 = new ServerRequest();
+                                    JSONObject json3 = sr2.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/deleteroom", params);
+                                    Toast.makeText(getApplication(), json2.getString("response"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.account_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.change_password_menu:
                 dlg = new Dialog(VIHomeActivity.this);
                 dlg.setContentView(R.layout.change_password_frag);
                 dlg.setTitle("Change Password");
@@ -119,85 +251,20 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
                     }
                 });
                 dlg.show();
-            }
-        });
+                return true;
+            case R.id.logout_menu:
+                SharedPreferences.Editor edit = pref.edit();
+                //Storing Data using SharedPreferences
+                edit.putString("token", "");
+                edit.commit();
+                Intent loginactivity = new Intent(VIHomeActivity.this, LoginActivity.class);
 
-        topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.topics_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        topicSpinner.setAdapter(adapter);
-
-        tagEditText = (AppCompatEditText) findViewById(R.id.tag);
-
-        friendSpinner = (AppCompatSpinner) findViewById(R.id.friend_spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> friends = ArrayAdapter.createFromResource(this,
-                R.array.friends_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        friendSpinner.setAdapter(friends);
-
-        topicStr = "General";
-        topicSpinner.setOnItemSelectedListener(this);
-
-
-        newVideoCallBtn = (AppCompatButton) findViewById(R.id.new_video_call);
-        newVideoCallBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String tagStr = tagEditText.getText().toString().trim();
-                String[] tags = tagStr.split(",", 4);
-                String tagJoin = "";
-                for (int i = 0; i < Math.min(tags.length, 3); i++) {
-                    String aTag = tags[i].trim();
-                    if (aTag.length() == 0) continue;
-                    if (aTag.length() > 10) {
-                        aTag = aTag.substring(0, 10).trim();
-                    }
-                    tagJoin += aTag;
-                    tagJoin += ",";
-                }
-                if (tagJoin.length() > 0) {
-                    tagJoin = tagJoin.substring(0, tagJoin.length() - 1);
-                }
-
-                params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("username", usernameStr));
-                params.add(new BasicNameValuePair("topic", topicStr));
-                params.add(new BasicNameValuePair("tags", tagJoin));
-                params.add(new BasicNameValuePair("rate", String.valueOf(rateInt)));
-
-                ServerRequest sr = new ServerRequest();
-                JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/createroom", params);
-                if (json != null) {
-                    try {
-                        String jsonStr = json.getString("response");
-                        Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
-                        String roomId = json.getString("roomId");
-                        Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
-                        viVideoActivity.putExtra("sessionId", roomId);
-//                        viVideoActivity.putExtra("userId", usernameStr);
-                        viVideoActivity.putExtra("isNavigation", topicStr.equals("Navigation"));
-                        startActivity(viVideoActivity);
-                        finish();
-//                        if (json.getBoolean("res")) {
-//
-//                            dlg.dismiss();
-//                            Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
-//                        } else {
-//
-//                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+                startActivity(loginactivity);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -231,4 +298,5 @@ public class VIHomeActivity extends AppCompatActivity implements AdapterView.OnI
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
 }

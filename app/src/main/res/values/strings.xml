@@ -6,6 +6,11 @@
     <string name="title_activity_helper_home">HelperHomeActivity</string>
     <string name="title_activity_vivideo">VIVideoActivity</string>
 
+    <!-- Menu -->
+    <string name="account_menu">Account</string>
+    <string name="change_password_menu">Change Password</string>
+    <string name="logout_menu">Logout</string>
+
     <!-- Login -->
     <string name="login_email_hint">example@sfsu.edu</string>
     <string name="login_username_hint">Username</string>
@@ -22,10 +27,11 @@
     <string name="logout_button">Logout</string>
 
     <!-- VI Home -->
-    <string name="new_video_call_button">New Video Call</string>
+    <string name="call_public_button">Request Help from Anyone</string>
+    <string name="call_friends_button">Request Help from Favorites</string>
     <string name="topic_hint">Choose a topic:</string>
     <string name="tag_hint">(Optional) Input 3 or less tags (separated with \",\"):</string>
-    <string name="friend_hint">Call a friend or anyone?</string>
+    <string name="friend_hint">Call a Favorite or Anyone?</string>
 
     <!-- VI Video -->
     <string name="accept_button">Accept</string>
@@ -46,18 +52,25 @@
     <string name="room_enter_button">Enter</string>
     <string name="room_cancel_button">Cancel</string>
     <string name="room_confirm_message">Start video call with %1$s on topic %2$s?</string>
+    <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
+        send downstream messages to this app.</string>
+    <string name="registering_message">Generating InstanceID token</string>
+    <string name="token_error_message">An error occurred while either fetching the InstanceID token,
+        sending the fetched token to the server or subscribing to the PubSub topic. Please try
+        running the sample again.</string>
+    <string name="notify_message">%1$s Need Your Help</string>
 
     <!-- Helper Video -->
     <string name="connect_hint_helper">Waiting for visual impairer to accept</string>
 
     <!-- Add Friend -->
-    <string name="send_request_confirm_message">Add %1$s as a friend?</string>
-    <string name="add_friend_confirm_message">%1$s wants to add you as a friend</string>
+    <string name="send_request_confirm_message">Add %1$s as a Favorite?</string>
+    <string name="add_friend_confirm_message">%1$s Wants to Add You as a Favorite</string>
     <string name="add_friend_ok_button">OK</string>
     <string name="add_friend_cancel_button">Cancel</string>
-    <string name="add_friend_send_message">Adding friend request is sent</string>
-    <string name="add_friend_accept">You added %1$s as a friend</string>
-    <!--<string name="add_friend_refuse">You didn't add %1$s as a friend</string>-->
+    <string name="add_friend_send_message">Adding Favorite Request is Sent</string>
+    <string name="add_friend_accept">You Added %1$s as a Favorite</string>
+    <!--<string name="add_friend_refuse">You Didn't Add %1$s as a Favorite</string>-->
 
     <!-- Topics -->
     <string-array name="topics_array">

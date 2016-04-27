@@ -199,12 +199,12 @@ public class VIVideoActivity extends AppCompatActivity implements
 
         //obtain necessary permissions for API level 23 and over (Marshmallow)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)   != PackageManager.PERMISSION_GRANTED
-         || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+//         || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
          || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)                 != PackageManager.PERMISSION_GRANTED
          || ContextCompat.checkSelfPermission(this, Manifest.permission.CAPTURE_AUDIO_OUTPUT)   != PackageManager.PERMISSION_GRANTED) {
 //         || ContextCompat.checkSelfPermission(this, Manifest.permission.)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                                                  Manifest.permission.CAMERA,
                                                                  Manifest.permission.CAPTURE_AUDIO_OUTPUT}, LOCATION_PERMISSION);
         }

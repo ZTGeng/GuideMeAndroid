@@ -1,11 +1,15 @@
 package edu.sfsu.geng.guideme.helper;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -13,15 +17,24 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.ListViewCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -54,27 +67,34 @@ public class HelperHomeActivity extends AppCompatActivity
     List<NameValuePair> params;
     ListViewCompat roomList;
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private ProgressBar mRegistrationProgressBar;
+    private boolean isReceiverRegistered;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helper_home);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         usernameText = (AppCompatTextView) findViewById(R.id.username_text);
-        chgPasswordBtn = (AppCompatButton)findViewById(R.id.change_btn);
-        logoutBtn = (AppCompatButton)findViewById(R.id.logout);
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor edit = pref.edit();
-                //Storing Data using SharedPreferences
-                edit.putString("token", "");
-                edit.commit();
-                Intent loginactivity = new Intent(HelperHomeActivity.this, LoginActivity.class);
-
-                startActivity(loginactivity);
-                finish();
-            }
-        });
+//        chgPasswordBtn = (AppCompatButton)findViewById(R.id.change_btn);
+//        logoutBtn = (AppCompatButton)findViewById(R.id.logout);
+//        logoutBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                SharedPreferences.Editor edit = pref.edit();
+//                //Storing Data using SharedPreferences
+//                edit.putString("token", "");
+//                edit.commit();
+//                Intent loginactivity = new Intent(HelperHomeActivity.this, LoginActivity.class);
+//
+//                startActivity(loginactivity);
+//                finish();
+//            }
+//        });
 
         pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
         token = pref.getString("token", "");
@@ -83,55 +103,55 @@ public class HelperHomeActivity extends AppCompatActivity
         usernameText.setText(usernameStr);
         rateInt = pref.getInt("rate", 5);
 
-        chgPasswordBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dlg = new Dialog(HelperHomeActivity.this);
-                dlg.setContentView(R.layout.change_password_frag);
-                dlg.setTitle("Change Password");
-                chgpassfrBtn = (AppCompatButton) dlg.findViewById(R.id.change_btn);
-
-                chgpassfrBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        oldpassEditText = (AppCompatEditText) dlg.findViewById(R.id.oldpass);
-                        newpassEditText = (AppCompatEditText) dlg.findViewById(R.id.newpass);
-                        oldpassStr = oldpassEditText.getText().toString();
-                        newpassStr = newpassEditText.getText().toString();
-                        params = new ArrayList<NameValuePair>();
-                        params.add(new BasicNameValuePair("oldpass", oldpassStr));
-                        params.add(new BasicNameValuePair("newpass", newpassStr));
-                        params.add(new BasicNameValuePair("id", token));
-                        ServerRequest sr = new ServerRequest();
-                        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/chgpass", params);
-                        if (json != null) {
-                            try {
-                                String jsonstr = json.getString("response");
-                                if (json.getBoolean("res")) {
-
-                                    dlg.dismiss();
-                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
-
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                    }
-                });
-                cancelBtn = (AppCompatButton) dlg.findViewById(R.id.cancelbtn);
-                cancelBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dlg.dismiss();
-                    }
-                });
-                dlg.show();
-            }
-        });
+//        chgPasswordBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                dlg = new Dialog(HelperHomeActivity.this);
+//                dlg.setContentView(R.layout.change_password_frag);
+//                dlg.setTitle("Change Password");
+//                chgpassfrBtn = (AppCompatButton) dlg.findViewById(R.id.change_btn);
+//
+//                chgpassfrBtn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        oldpassEditText = (AppCompatEditText) dlg.findViewById(R.id.oldpass);
+//                        newpassEditText = (AppCompatEditText) dlg.findViewById(R.id.newpass);
+//                        oldpassStr = oldpassEditText.getText().toString();
+//                        newpassStr = newpassEditText.getText().toString();
+//                        params = new ArrayList<NameValuePair>();
+//                        params.add(new BasicNameValuePair("oldpass", oldpassStr));
+//                        params.add(new BasicNameValuePair("newpass", newpassStr));
+//                        params.add(new BasicNameValuePair("id", token));
+//                        ServerRequest sr = new ServerRequest();
+//                        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/chgpass", params);
+//                        if (json != null) {
+//                            try {
+//                                String jsonstr = json.getString("response");
+//                                if (json.getBoolean("res")) {
+//
+//                                    dlg.dismiss();
+//                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
+//
+//                                }
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//
+//                    }
+//                });
+//                cancelBtn = (AppCompatButton) dlg.findViewById(R.id.cancelbtn);
+//                cancelBtn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        dlg.dismiss();
+//                    }
+//                });
+//                dlg.show();
+//            }
+//        });
 
         topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -180,6 +200,116 @@ public class HelperHomeActivity extends AppCompatActivity
             }
         });
 
+        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(RegistrationIntentService.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    Toast.makeText(getApplicationContext(), R.string.gcm_send_message, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.token_error_message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        // Registering BroadcastReceiver
+        registerReceiver();
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
+        super.onPause();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.account_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.change_password_menu:
+                dlg = new Dialog(HelperHomeActivity.this);
+                dlg.setContentView(R.layout.change_password_frag);
+                dlg.setTitle("Change Password");
+                chgpassfrBtn = (AppCompatButton) dlg.findViewById(R.id.change_btn);
+
+                chgpassfrBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        oldpassEditText = (AppCompatEditText) dlg.findViewById(R.id.oldpass);
+                        newpassEditText = (AppCompatEditText) dlg.findViewById(R.id.newpass);
+                        oldpassStr = oldpassEditText.getText().toString();
+                        newpassStr = newpassEditText.getText().toString();
+                        params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("oldpass", oldpassStr));
+                        params.add(new BasicNameValuePair("newpass", newpassStr));
+                        params.add(new BasicNameValuePair("id", token));
+                        ServerRequest sr = new ServerRequest();
+                        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/chgpass", params);
+                        if (json != null) {
+                            try {
+                                String jsonStr = json.getString("response");
+                                if (json.getBoolean("res")) {
+
+                                    dlg.dismiss();
+                                    Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                });
+                cancelBtn = (AppCompatButton) dlg.findViewById(R.id.cancelbtn);
+                cancelBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dlg.dismiss();
+                    }
+                });
+                dlg.show();
+                return true;
+            case R.id.logout_menu:
+                SharedPreferences.Editor edit = pref.edit();
+                //Storing Data using SharedPreferences
+                edit.putString("token", "");
+                edit.commit();
+                Intent loginactivity = new Intent(HelperHomeActivity.this, LoginActivity.class);
+
+                startActivity(loginactivity);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -214,11 +344,7 @@ public class HelperHomeActivity extends AppCompatActivity
     }
 
     /**
-     * Callback method to be invoked when an item in this AdapterView has
-     * been clicked.
-     * <p/>
-     * Implementers can call getItemAtPosition(position) if they need
-     * to access the data associated with the selected item.
+     * Helper clicks one of the Rooms.
      *
      * @param parent   The AdapterView where the click happened.
      * @param view     The view within the AdapterView that was clicked (this
@@ -240,7 +366,6 @@ public class HelperHomeActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int id) {
                     Intent helperVideoActivity = new Intent(HelperHomeActivity.this, HelperVideoActivity.class);
                     helperVideoActivity.putExtra("sessionId", roomId);
-//                    helperVideoActivity.putExtra("userId", usernameStr);
                     helperVideoActivity.putExtra("isNavigation", topic.equals("Navigation"));
                     startActivity(helperVideoActivity);
                     finish();
@@ -300,6 +425,34 @@ public class HelperHomeActivity extends AppCompatActivity
 
             return rowView;
         }
+    }
+
+    private void registerReceiver(){
+        if(!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(RegistrationIntentService.REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
+    }
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+//                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
 }

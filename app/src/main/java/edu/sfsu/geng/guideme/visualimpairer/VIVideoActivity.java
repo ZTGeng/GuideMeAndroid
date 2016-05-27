@@ -91,6 +91,9 @@ public class VIVideoActivity extends AppCompatActivity implements
     private AppCompatButton addFriendButton;
     private boolean isSendingLocation;
 
+    private boolean isVideoStart;
+    private String helperName;
+
     private SignalingChannel mSignalingChannel;
 //    private InputMethodManager mInputMethodManager;
 //    private WindowManager mWindowManager;
@@ -285,6 +288,9 @@ public class VIVideoActivity extends AppCompatActivity implements
         Log.d(TAG, "onAcceptClicked");
         if (mRtcSession != null) {
             if (mStreamSet != null) {
+                isVideoStart = true;
+                helperName = mPeerChannel.getPeerId();
+
                 updateVideoView(true);
                 mRtcSession.start(mStreamSet);
                 connectText.setText(R.string.connect_start_vi);
@@ -363,10 +369,12 @@ public class VIVideoActivity extends AppCompatActivity implements
     }
 
     public void onAddFriend(final View view) {
-        if (mPeerChannel != null) {
+//        if (mPeerChannel != null) {
+        if (isVideoStart) {
             // TODO check already friends
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
+//            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
+            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), helperName));
             builder.setPositiveButton(R.string.add_friend_ok_button, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -391,7 +399,8 @@ public class VIVideoActivity extends AppCompatActivity implements
             AlertDialog dialog = builder.create();
             dialog.show();
         } else {
-            Log.d(TAG, "onAddFriend: mPeerChannel is null!");
+//            Log.d(TAG, "onAddFriend: mPeerChannel is null!");
+            Log.d(TAG, "onAddFriend: video session has not started!");
         }
     }
 
@@ -610,7 +619,7 @@ public class VIVideoActivity extends AppCompatActivity implements
     @Override
     public void onDisconnect() {
         Log.d(TAG, "onDisconnect");
-        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show();
         updateVideoView(false);
         mStreamSet = null;
         if (mRtcSession != null) {
@@ -634,8 +643,17 @@ public class VIVideoActivity extends AppCompatActivity implements
             }
         }
 
-        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
-        startActivity(homeActivity);
+        if (isVideoStart) {
+            Intent rateActivity = new Intent(VIVideoActivity.this, VIRateActivity.class);
+            rateActivity.putExtra("helperName", helperName);
+            startActivity(rateActivity);
+        } else {
+            Intent rateActivity = new Intent(VIVideoActivity.this, VIRateActivity.class);
+            rateActivity.putExtra("helperName", "FakeName");
+            startActivity(rateActivity);
+//        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
+//        startActivity(homeActivity);
+        }
     }
 
     @Override

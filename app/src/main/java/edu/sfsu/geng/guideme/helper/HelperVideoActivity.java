@@ -93,6 +93,9 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private String sessionId;
     private String usernameStr;
 
+    private boolean isVideoStart;
+    private String viName;
+
     private List<NameValuePair> params;
 
     private final static boolean wantAudio = true;
@@ -237,10 +240,11 @@ public class HelperVideoActivity extends AppCompatActivity implements
     }
 
     public void onAddFriend(final View view) {
-        if (mPeerChannel != null) {
+        if (isVideoStart) {
             // TODO check already friends
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
+//            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
+            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), viName));
             builder.setPositiveButton(R.string.add_friend_ok_button, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -363,11 +367,11 @@ public class HelperVideoActivity extends AppCompatActivity implements
                 } else {
                     Log.d(TAG, "onMessage: curLocationMarker is null!");
                 }
-                if (mMap != null) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(newLatLng));
-                } else {
-                    Log.d(TAG, "onMessage: mMap is null!");
-                }
+//                if (mMap != null) {
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(newLatLng));
+//                } else {
+//                    Log.d(TAG, "onMessage: mMap is null!");
+//                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -459,6 +463,10 @@ public class HelperVideoActivity extends AppCompatActivity implements
     // This is the method using
     private void onInboundCall(final SessionDescription sessionDescription) {
         Log.d(TAG, "onInboundCall");
+
+        isVideoStart = true;
+        viName = mPeerChannel.getPeerId();
+
         connectText.setText("");
         fabAddFriend.setEnabled(true);
         if (mRtcSession != null) {
@@ -502,7 +510,8 @@ public class HelperVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onDisconnect() {
-        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "onDisconnect");
+        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show();
         updateVideoView(false);
         mStreamSet = null;
         if (mRtcSession != null) {
@@ -512,9 +521,18 @@ public class HelperVideoActivity extends AppCompatActivity implements
         }
         mRtcSession = null;
         mSignalingChannel = null;
-        Intent homeActivity = new Intent(HelperVideoActivity.this, HelperHomeActivity.class);
-        startActivity(homeActivity);
-//        finish();
+
+        if (isVideoStart) {
+            Intent rateActivity = new Intent(HelperVideoActivity.this, HelperRateActivity.class);
+            rateActivity.putExtra("vviName", viName);
+            startActivity(rateActivity);
+        } else {
+            Intent rateActivity = new Intent(HelperVideoActivity.this, HelperRateActivity.class);
+            rateActivity.putExtra("viName", "FakeName");
+            startActivity(rateActivity);
+//        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
+//        startActivity(homeActivity);
+        }
     }
 
     @Override

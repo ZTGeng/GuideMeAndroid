@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -17,7 +20,6 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -38,21 +40,26 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
-import edu.sfsu.geng.guideme.login.ServerRequest;
+import edu.sfsu.geng.guideme.ServerRequest;
 import edu.sfsu.geng.guideme.video.SignalingChannel;
 
 public class HelperVideoActivity extends AppCompatActivity implements
@@ -102,9 +109,10 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private final static boolean wantVideo = true;
     public static final int LOCATION_PERMISSION = 15;
 
-    private boolean isNavigation;
+    private boolean isNavigation, beforeGetLocation;
     private GoogleMap mMap;
-    private Marker curLocationMarker;
+    private Marker curLocationMarker, destinationMarker;
+    private String destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +120,10 @@ public class HelperVideoActivity extends AppCompatActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         sessionId = getIntent().getStringExtra("sessionId");
         isNavigation = getIntent().getBooleanExtra("isNavigation", false);
+        if (isNavigation) {
+            beforeGetLocation = true;
+            destination = getIntent().getStringExtra("des");
+        }
 
         setContentView(R.layout.activity_helper_video);
 
@@ -228,6 +240,9 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private void quit() {
         Log.d(TAG, "Quit");
         if (mSignalingChannel != null) {
+            if (isVideoStart && mPeerChannel != null) {
+                mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
+            }
             mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
         } else {
             Log.d(TAG, "onFabClicked: mSignalingChannel is null!");
@@ -367,11 +382,18 @@ public class HelperVideoActivity extends AppCompatActivity implements
                 } else {
                     Log.d(TAG, "onMessage: curLocationMarker is null!");
                 }
-//                if (mMap != null) {
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(newLatLng));
-//                } else {
-//                    Log.d(TAG, "onMessage: mMap is null!");
-//                }
+                if (beforeGetLocation) {
+                    beforeGetLocation = false;
+                    if (mMap != null) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(newLatLng));
+                        if (destinationMarker != null) {
+                            LatLng destinationLatLng = destinationMarker.getPosition();
+                            setDirection(latitude, longitude, destinationLatLng.latitude, destinationLatLng.longitude);
+                        }
+                    } else {
+                        Log.d(TAG, "onMessage: mMap is null!");
+                    }
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -527,11 +549,11 @@ public class HelperVideoActivity extends AppCompatActivity implements
             rateActivity.putExtra("vviName", viName);
             startActivity(rateActivity);
         } else {
-            Intent rateActivity = new Intent(HelperVideoActivity.this, HelperRateActivity.class);
-            rateActivity.putExtra("viName", "FakeName");
-            startActivity(rateActivity);
-//        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
-//        startActivity(homeActivity);
+//            Intent rateActivity = new Intent(HelperVideoActivity.this, HelperRateActivity.class);
+//            rateActivity.putExtra("viName", "FakeName");
+//            startActivity(rateActivity);
+            Intent homeActivity = new Intent(HelperVideoActivity.this, HelperHomeActivity.class);
+            startActivity(homeActivity);
         }
     }
 
@@ -596,6 +618,108 @@ public class HelperVideoActivity extends AppCompatActivity implements
         curLocationMarker = mMap.addMarker(new MarkerOptions().position(sf).title("User Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sf));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15f));
+        if (destination != null) {
+            setDestination(destination);
+            if (destinationMarker != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(destinationMarker.getPosition()));
+            }
+        }
+    }
+
+    private void setDestination(String desString) {
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocationName(desString, 1);
+            if (addresses.isEmpty()) {
+                Log.e(TAG, "Cannot find destination address");
+                return;
+            }
+            Address address = addresses.get(0);
+            destinationMarker = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(address.getLatitude(), address.getLongitude()))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                    .title("Destination"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setDirection(double olat, double olng, double dlat, double dlng) {
+        String url = "http://maps.googleapis.com/maps/api/directions/json?origin="
+            + olat + "," + olng + "&destination=" + dlat + "," + dlng + "&sensor=false&mode=walking";
+        params = new ArrayList<NameValuePair>();
+
+//        System.out.println("=====================1==========================");
+        ServerRequest sr = new ServerRequest();
+        JSONObject json = sr.getJSON(url, params);
+//        System.out.println(json.toString());
+//        System.out.println("======================2=========================");
+
+        if (json != null) {
+            try {
+                JSONArray routes = json.getJSONArray("routes");
+//                long distanceForSegment = routes.getJSONObject(0)
+//                        .getJSONArray("legs")
+//                        .getJSONObject(0)
+//                        .getJSONObject("distance")
+//                        .getInt("value");
+
+                JSONArray steps = routes.getJSONObject(0)
+                        .getJSONArray("legs")
+                        .getJSONObject(0)
+                        .getJSONArray("steps");
+
+                List<LatLng> lines = new ArrayList<LatLng>();
+
+                for(int i=0; i < steps.length(); i++) {
+                    String polyline = steps.getJSONObject(i).getJSONObject("polyline").getString("points");
+
+                    for(LatLng p : decodePolyline(polyline)) {
+                        lines.add(p);
+                    }
+                }
+
+                Polyline polylineToAdd = mMap.addPolyline(new PolylineOptions().addAll(lines).width(3).color(Color.RED));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /** POLYLINE DECODER - http://jeffreysambells.com/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java **/
+    private List<LatLng> decodePolyline(String encoded) {
+
+        List<LatLng> poly = new ArrayList<LatLng>();
+
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((double) lat / 1E5, (double) lng / 1E5);
+            poly.add(p);
+        }
+
+        return poly;
     }
 
 }

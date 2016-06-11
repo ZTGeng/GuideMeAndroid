@@ -8,13 +8,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
@@ -27,10 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -48,20 +45,20 @@ import java.util.List;
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
 import edu.sfsu.geng.guideme.login.LoginActivity;
-import edu.sfsu.geng.guideme.login.ServerRequest;
+import edu.sfsu.geng.guideme.ServerRequest;
 
 public class HelperHomeActivity extends AppCompatActivity
-        implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
+        implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "HelperHome";
 
     SharedPreferences pref;
-    String token, grav, usernameStr, oldpassStr, newpassStr, topicStr;
-    int rateInt;
+    String token, grav, usernameStr, oldpassStr, newpassStr;//, topicStr;
+    float rateFloat;
     AppCompatButton chgPasswordBtn, chgpassfrBtn, cancelBtn, logoutBtn, getRoomListBtn;
     Dialog dlg;
     AppCompatEditText oldpassEditText, newpassEditText;
-    AppCompatSpinner topicSpinner;
+//    AppCompatSpinner topicSpinner;
     AppCompatTextView usernameText;
 
     List<NameValuePair> params;
@@ -80,87 +77,23 @@ public class HelperHomeActivity extends AppCompatActivity
         setSupportActionBar(myToolbar);
 
         usernameText = (AppCompatTextView) findViewById(R.id.username_text);
-//        chgPasswordBtn = (AppCompatButton)findViewById(R.id.change_btn);
-//        logoutBtn = (AppCompatButton)findViewById(R.id.logout);
-//        logoutBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                SharedPreferences.Editor edit = pref.edit();
-//                //Storing Data using SharedPreferences
-//                edit.putString("token", "");
-//                edit.commit();
-//                Intent loginactivity = new Intent(HelperHomeActivity.this, LoginActivity.class);
-//
-//                startActivity(loginactivity);
-//                finish();
-//            }
-//        });
 
         pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
         token = pref.getString("token", "");
         grav = pref.getString("grav", "");
         usernameStr = pref.getString("username", "");
         usernameText.setText(usernameStr);
-        rateInt = pref.getInt("rate", 5);
+        rateFloat = pref.getFloat("rate", 5f);
 
-//        chgPasswordBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                dlg = new Dialog(HelperHomeActivity.this);
-//                dlg.setContentView(R.layout.change_password_frag);
-//                dlg.setTitle("Change Password");
-//                chgpassfrBtn = (AppCompatButton) dlg.findViewById(R.id.change_btn);
-//
-//                chgpassfrBtn.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        oldpassEditText = (AppCompatEditText) dlg.findViewById(R.id.oldpass);
-//                        newpassEditText = (AppCompatEditText) dlg.findViewById(R.id.newpass);
-//                        oldpassStr = oldpassEditText.getText().toString();
-//                        newpassStr = newpassEditText.getText().toString();
-//                        params = new ArrayList<NameValuePair>();
-//                        params.add(new BasicNameValuePair("oldpass", oldpassStr));
-//                        params.add(new BasicNameValuePair("newpass", newpassStr));
-//                        params.add(new BasicNameValuePair("id", token));
-//                        ServerRequest sr = new ServerRequest();
-//                        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/chgpass", params);
-//                        if (json != null) {
-//                            try {
-//                                String jsonstr = json.getString("response");
-//                                if (json.getBoolean("res")) {
-//
-//                                    dlg.dismiss();
-//                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
-//                                } else {
-//                                    Toast.makeText(getApplication(), jsonstr, Toast.LENGTH_SHORT).show();
-//
-//                                }
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//
-//                    }
-//                });
-//                cancelBtn = (AppCompatButton) dlg.findViewById(R.id.cancelbtn);
-//                cancelBtn.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        dlg.dismiss();
-//                    }
-//                });
-//                dlg.show();
-//            }
-//        });
 
-        topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.topics_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        topicSpinner.setAdapter(adapter);
-
-        topicStr = "General";
-        topicSpinner.setOnItemSelectedListener(this);
+//        topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                R.array.topics_array, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        topicSpinner.setAdapter(adapter);
+//
+//        topicStr = "General";
+//        topicSpinner.setOnItemSelectedListener(this);
 
         roomList = (ListViewCompat) findViewById(R.id.room_list);
         final RoomListAdapter roomListAdapter = new RoomListAdapter(this, -1, new ArrayList<JSONObject>());
@@ -176,7 +109,6 @@ public class HelperHomeActivity extends AppCompatActivity
 
                 params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("id", token));
-                params.add(new BasicNameValuePair("topic", topicStr));
                 ServerRequest sr = new ServerRequest();
                 JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/getroomlist", params);
                 if (json != null) {
@@ -240,6 +172,7 @@ public class HelperHomeActivity extends AppCompatActivity
         super.onPause();
     }
 
+    /* option menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -326,10 +259,10 @@ public class HelperHomeActivity extends AppCompatActivity
      * @param position The position of the view in the adapter
      * @param id       The row id of the item that is selected
      */
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        topicStr = parent.getAdapter().getItem(position).toString();
-    }
+//    @Override
+//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//        topicStr = parent.getAdapter().getItem(position).toString();
+//    }
 
     /**
      * Callback method to be invoked when the selection disappears from this
@@ -338,10 +271,10 @@ public class HelperHomeActivity extends AppCompatActivity
      *
      * @param parent The AdapterView that now contains no selected item.
      */
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
+//    @Override
+//    public void onNothingSelected(AdapterView<?> parent) {
+//
+//    }
 
     /**
      * Helper clicks one of the Rooms.
@@ -359,14 +292,17 @@ public class HelperHomeActivity extends AppCompatActivity
         try {
             final String roomId = room.getString("roomId");
             final String username = room.getString("username");
-            final String topic = room.getString("topic");
+            final String des = room.getString("des");
+            final boolean isNavigation = room.getBoolean("isNavigation");
+//            final float rate = (float) room.getDouble("rate");
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(String.format(getResources().getString(R.string.room_confirm_message), username, topic));
+            builder.setMessage(String.format(getResources().getString(R.string.room_confirm_message), username));
             builder.setPositiveButton(R.string.room_enter_button, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent helperVideoActivity = new Intent(HelperHomeActivity.this, HelperVideoActivity.class);
                     helperVideoActivity.putExtra("sessionId", roomId);
-                    helperVideoActivity.putExtra("isNavigation", topic.equals("Navigation"));
+                    helperVideoActivity.putExtra("isNavigation", isNavigation);
+                    helperVideoActivity.putExtra("des", des);
                     startActivity(helperVideoActivity);
                     finish();
                 }
@@ -409,16 +345,19 @@ public class HelperHomeActivity extends AppCompatActivity
             View rowView = inflater.inflate(R.layout.room_list_item, parent, false);
             AppCompatTextView usernameText = (AppCompatTextView) rowView.findViewById(R.id.room_item_username);
             RatingBar ratingBar = (RatingBar) rowView.findViewById(R.id.room_item_ratingBar);
-            AppCompatTextView topicText = (AppCompatTextView) rowView.findViewById(R.id.room_item_topic);
-            AppCompatTextView tagsText = (AppCompatTextView) rowView.findViewById(R.id.room_item_tags);
+            AppCompatTextView desText = (AppCompatTextView) rowView.findViewById(R.id.room_item_des);
+//            AppCompatTextView tagsText = (AppCompatTextView) rowView.findViewById(R.id.room_item_tags);
+            AppCompatImageView isNaviImage = (AppCompatImageView) rowView.findViewById(R.id.room_item_navi);
 
             try {
                 JSONObject room = rooms.get(position);
                 usernameText.setText(room.getString("username"));
-                topicText.setText(room.getString("topic"));
-                tagsText.setText(room.getString("tags"));
-                int rateInt = Integer.parseInt(room.getString("rate"));
-                ratingBar.setRating(rateInt);
+                desText.setText(room.getString("des"));
+//                tagsText.setText(room.getString("tags"));
+                ratingBar.setRating((float) room.getDouble("rate"));
+                if (room.getBoolean("isNavigation")) {
+                    isNaviImage.setImageResource(android.R.drawable.ic_dialog_map);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

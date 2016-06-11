@@ -19,7 +19,7 @@
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
@@ -42,86 +42,21 @@
                 android:gravity="center_vertical" />
         </android.support.v7.widget.LinearLayoutCompat>
 
-        <android.support.v7.widget.AppCompatTextView
+        <android.support.v7.widget.AppCompatButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/topic_hint"/>
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/topic_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/tag_hint"/>
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/tag"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:text="@string/call_button"
+            android:id="@+id/call_btn"/>
 
         <android.support.v7.widget.AppCompatButton
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_margin="16dp"
-            android:text="@string/call_public_button"
-            android:id="@+id/call_public_btn"/>
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_margin="16dp"
-            android:text="@string/call_friends_button"
-            android:id="@+id/call_friends_btn"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:text="@string/call_navi_button"
+            android:id="@+id/call_navi_btn"/>
 
     </android.support.v7.widget.LinearLayoutCompat>
-<!--
-    <android.support.v7.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-
-            <android.support.v7.widget.AppCompatButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/change_btn"
-                android:text="@string/change_password_button" />
-            <android.support.v7.widget.AppCompatButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/logout"
-                android:text="@string/logout_button" />
-        </android.support.v7.widget.LinearLayoutCompat>
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_margin="16dp"
-            android:text="@string/new_video_call_button"
-            android:id="@+id/new_video_call"/>
-
-
-
-    </android.support.v7.widget.LinearLayoutCompat>
-
-    <android.support.v7.widget.AppCompatSpinner
-        android:id="@+id/friend_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="154dp" />
-
-    <android.support.v7.widget.AppCompatTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/friend_hint"
-        android:layout_above="@+id/friend_spinner"
-        android:layout_alignParentLeft="true" />
--->
 </android.support.v7.widget.LinearLayoutCompat>

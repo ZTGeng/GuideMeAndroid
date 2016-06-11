@@ -3,7 +3,6 @@ package edu.sfsu.geng.guideme.helper;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -22,7 +21,7 @@ import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
-import edu.sfsu.geng.guideme.login.ServerRequest;
+import edu.sfsu.geng.guideme.ServerRequest;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in

@@ -32,6 +32,13 @@
     <string name="topic_hint">Choose a topic:</string>
     <string name="tag_hint">(Optional) Input 3 or less tags (separated with \",\"):</string>
     <string name="friend_hint">Call a Favorite or Anyone?</string>
+    <string name="call_button">Start a Video Calling</string>
+    <string name="call_navi_button">Start a Video Calling with Navigation</string>
+    <string name="start_call_wo_navi">Please Input a Description about the Help You Need</string>
+    <string name="start_call_w_navi">Please Input the Destination You Want to Go</string>
+    <string name="start_call_cancel">Cancel</string>
+    <string name="start_call_next">Next</string>
+    <string name="select_friend">Please Select Your Favorites. Or None to Get Help from a Stranger.</string>
 
     <!-- VI Video -->
     <string name="accept_button">Accept</string>
@@ -58,7 +65,7 @@
     <string name="empty_list">No Request</string>
     <string name="room_enter_button">Enter</string>
     <string name="room_cancel_button">Cancel</string>
-    <string name="room_confirm_message">Start video call with %1$s on topic %2$s?</string>
+    <string name="room_confirm_message">Start video call with %1$s?</string>
     <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
         send downstream messages to this app.</string>
     <string name="registering_message">Generating InstanceID token</string>
@@ -100,4 +107,7 @@
     <string name="title_activity_helper_video">HelperVideoActivity</string>
     <string name="title_activity_vi_rate">VIRateActivity</string>
     <string name="title_activity_helper_rate">HelperRateActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

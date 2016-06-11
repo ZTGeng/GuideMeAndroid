@@ -21,6 +21,7 @@ import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
+import edu.sfsu.geng.guideme.ServerRequest;
 import edu.sfsu.geng.guideme.helper.HelperHomeActivity;
 import edu.sfsu.geng.guideme.visualimpairer.VIHomeActivity;
 
@@ -79,13 +80,13 @@ public class LoginActivity extends AppCompatActivity {
                             String grav = json.getString("grav");
                             String username = json.getString("username");
                             String role = json.getString("role");
-                            int rate = json.getInt("rate");
+                            float rate = Float.valueOf(json.getString("rate"));
                             SharedPreferences.Editor edit = pref.edit();
                             //Storing Data using SharedPreferences
                             edit.putString("token", token);
                             edit.putString("grav", grav);
                             edit.putString("username", username);
-                            edit.putInt("rate", rate);
+                            edit.putFloat("rate", rate);
                             edit.commit();
                             Intent homeActivity;
                             if (role.equals("vi")) {

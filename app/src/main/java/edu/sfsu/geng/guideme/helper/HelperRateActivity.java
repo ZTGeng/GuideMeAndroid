@@ -20,8 +20,7 @@ import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
-import edu.sfsu.geng.guideme.login.ServerRequest;
-import edu.sfsu.geng.guideme.visualimpairer.VIHomeActivity;
+import edu.sfsu.geng.guideme.ServerRequest;
 
 public class HelperRateActivity extends AppCompatActivity {
 

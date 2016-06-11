@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatRadioButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
@@ -21,6 +20,7 @@ import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
+import edu.sfsu.geng.guideme.ServerRequest;
 
 public class RegisterActivity extends AppCompatActivity {
 

@@ -6,10 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -17,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -52,7 +49,7 @@ import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
-import edu.sfsu.geng.guideme.login.ServerRequest;
+import edu.sfsu.geng.guideme.ServerRequest;
 import edu.sfsu.geng.guideme.video.SignalingChannel;
 
 public class VIVideoActivity extends AppCompatActivity implements
@@ -648,11 +645,11 @@ public class VIVideoActivity extends AppCompatActivity implements
             rateActivity.putExtra("helperName", helperName);
             startActivity(rateActivity);
         } else {
-            Intent rateActivity = new Intent(VIVideoActivity.this, VIRateActivity.class);
-            rateActivity.putExtra("helperName", "FakeName");
-            startActivity(rateActivity);
-//        Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
-//        startActivity(homeActivity);
+//            Intent rateActivity = new Intent(VIVideoActivity.this, VIRateActivity.class);
+//            rateActivity.putExtra("helperName", "FakeName");
+//            startActivity(rateActivity);
+            Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
+            startActivity(homeActivity);
         }
     }
 

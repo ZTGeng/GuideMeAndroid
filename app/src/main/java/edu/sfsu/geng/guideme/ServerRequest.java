@@ -1,4 +1,4 @@
-package edu.sfsu.geng.guideme.login;
+package edu.sfsu.geng.guideme;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class ServerRequest {
             StringBuilder sb = new StringBuilder();
             String line = null;
             while ((line = reader.readLine()) != null) {
-                sb.append(line).append("n");
+                sb.append(line).append("\n");
             }
             is.close();
             json = sb.toString();

@@ -2,34 +2,40 @@
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:orientation="vertical"
     android:layout_margin="10dp">
 
     <android.support.v7.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:orientation="vertical">
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/room_item_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+            <RatingBar
+                android:id="@+id/room_item_ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/ratingBarStyleSmall"
+                android:numStars="5"
+                android:isIndicator="true" />
+        </android.support.v7.widget.LinearLayoutCompat>
+
         <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/room_item_username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <RatingBar
-            android:id="@+id/room_item_ratingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/ratingBarStyleSmall"
-            android:numStars="5"
-            android:isIndicator="true" />
+            android:id="@+id/room_item_des"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </android.support.v7.widget.LinearLayoutCompat>
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/room_item_topic"
-        android:layout_width="match_parent"
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textStyle="bold" />
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/room_item_tags"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_weight="1"
+        android:id="@+id/room_item_navi"
+        android:foregroundGravity="center" />
 </android.support.v7.widget.LinearLayoutCompat>

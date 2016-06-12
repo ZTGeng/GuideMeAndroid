@@ -2,6 +2,7 @@ package edu.sfsu.geng.guideme.helper;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -24,17 +25,22 @@ import edu.sfsu.geng.guideme.ServerRequest;
 
 public class HelperRateActivity extends AppCompatActivity {
 
+    SharedPreferences pref;
+
     private AppCompatButton submitBtn;
     private List<NameValuePair> params;
     private RatingBar ratingBar;
     private float rateFloat;
-    private String viName;
+    private String viName, myName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helper_rate);
         viName = getIntent().getStringExtra("viName");
+
+        pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
+        myName = pref.getString("username", "");
 
         ratingBar = (RatingBar) findViewById(R.id.helper_ratingBar);
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -65,6 +71,7 @@ public class HelperRateActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("username", viName));
+                params.add(new BasicNameValuePair("rater", myName));
                 params.add(new BasicNameValuePair("rate", String.valueOf(rateFloat)));
                 ServerRequest sr = new ServerRequest();
                 JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/rate", params);

@@ -15,71 +15,56 @@
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/connect_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center_vertical"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp"
-            android:text="@string/connect_hint_vi"
-            android:textColor="#333"
-            android:textSize="20sp" />
-
+        android:layout_height="match_parent">
         <android.support.v7.widget.LinearLayoutCompat
-            android:id="@+id/header"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <android.support.v7.widget.ListViewCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/waiting_helper_list">
+
+            </android.support.v7.widget.ListViewCompat>
+        </android.support.v7.widget.LinearLayoutCompat>
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical">
 
             <android.support.v7.widget.AppCompatButton
-                android:id="@+id/decline_btn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="@string/decline_button" />
+                android:id="@+id/quit_btn"
+                android:text="@string/quit_button" />
 
             <android.support.v7.widget.AppCompatButton
-                android:id="@+id/accept_btn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="@string/accept_button" />
+                android:id="@+id/toggle_location_btn"
+                android:text="@string/toggle_location_button_on" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/add_friend_btn"
+                android:text="@string/add_friend_button" />
+            <!--
+            <TextureView
+                android:id="@+id/self_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="invisible" />
+            -->
 
         </android.support.v7.widget.LinearLayoutCompat>
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:id="@+id/quit_btn"
-            android:text="@string/quit_button" />
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:id="@+id/toggle_location_btn"
-            android:text="@string/toggle_location_button_on" />
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:id="@+id/add_friend_btn"
-            android:text="@string/add_friend_button" />
-        <!--
-        <TextureView
-            android:id="@+id/self_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:visibility="invisible" />
-        -->
-
     </android.support.v7.widget.LinearLayoutCompat>
+
 
 </FrameLayout>

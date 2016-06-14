@@ -39,8 +39,8 @@ public class VIHomeActivity extends AppCompatActivity
     private static final String TAG = "VIHome";
 
     SharedPreferences pref;
-    String token, grav, usernameStr, oldpassStr, newpassStr;//, topicStr;
-    float rateFloat;
+    String token, grav, usernameStr, oldpassStr, newpassStr, rateStr;//, topicStr;
+//    float rateFloat;
     AppCompatButton callBtn, callNaviBtn;
     boolean isNavigation;
     String desString; // description or destination
@@ -70,7 +70,7 @@ public class VIHomeActivity extends AppCompatActivity
         token = pref.getString("token", "");
         grav = pref.getString("grav", "");
         usernameStr = pref.getString("username", "");
-        rateFloat = pref.getFloat("rate", 5f);
+        rateStr = pref.getString("rate", "5.0");
 
         usernameText = (AppCompatTextView) findViewById(R.id.username_text);
         usernameText.setText(usernameStr);
@@ -189,7 +189,7 @@ public class VIHomeActivity extends AppCompatActivity
         params.add(new BasicNameValuePair("username", usernameStr)); // should use token?
         params.add(new BasicNameValuePair("des", desString));
         params.add(new BasicNameValuePair("isNavigation", String.valueOf(isNavigation)));
-        params.add(new BasicNameValuePair("rate", String.valueOf(rateFloat)));
+        params.add(new BasicNameValuePair("rate", rateStr));
 
         ServerRequest sr = new ServerRequest();
         JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/createroom", params);
@@ -217,7 +217,7 @@ public class VIHomeActivity extends AppCompatActivity
         params.add(new BasicNameValuePair("roomId", roomId));
         params.add(new BasicNameValuePair("des", desString));
         params.add(new BasicNameValuePair("isNavigation", String.valueOf(isNavigation)));
-        params.add(new BasicNameValuePair("rate", String.valueOf(rateFloat)));
+        params.add(new BasicNameValuePair("rate", rateStr));
 
         ServerRequest sr = new ServerRequest();
         JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/callfriendsbyname", params);

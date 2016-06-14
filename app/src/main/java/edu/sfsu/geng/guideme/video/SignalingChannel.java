@@ -40,10 +40,11 @@ public class SignalingChannel {
     private JoinListener mJoinListener;
     private DisconnectListener mDisconnectListener;
     private SessionFullListener mSessionFullListener;
+    private RefreshListListener mRefreshListListener;
 
-    public SignalingChannel(String baseUrl, String session, String userId) {
+    public SignalingChannel(String baseUrl, String session, String userId, String roleOrRate) {
 //        String userId = new BigInteger(40, new Random()).toString(32);
-        mServerToClientUrl = baseUrl + "/stoc/" + session + "/" + userId;
+        mServerToClientUrl = baseUrl + "/stoc/" + session + "/" + userId + "/" + roleOrRate;
         mClientToServerUrl = baseUrl + "/ctos/" + session + "/" + userId;
         mMainHandler = new Handler(Looper.getMainLooper());
         Thread sendThread = new SendThread();
@@ -123,6 +124,25 @@ public class SignalingChannel {
         }).start();
     }
 
+    public void select(String baseUrl, String session, String peerId) {
+        final String mSelectUrl = baseUrl + "/select/" + session + "/" + peerId;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(mSelectUrl);
+
+                try {
+                    HttpResponse httpResponse = httpClient.execute(httpGet);
+                    HttpEntity httpEntity = httpResponse.getEntity();
+                } catch (IOException exception) {
+                    Log.e(TAG, "Select Error: " + exception);
+                    exception.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     private void readEventStream(final BufferedReader bufferedReader) throws IOException {
         String line;
         while ((line = bufferedReader.readLine()) != null) {
@@ -184,6 +204,10 @@ public class SignalingChannel {
             if (mSessionFullListener != null) {
                 mSessionFullListener.onSessionFull();
             }
+        } else if (event.equals("refresh")) {
+            if (mRefreshListListener != null) {
+                mRefreshListListener.onRefresh(data);
+            }
         } else {
             Log.w(TAG, "unhandled event: " + event);
 
@@ -200,6 +224,10 @@ public class SignalingChannel {
 
     public void setSessionFullListener(final SessionFullListener sessionFullListener) {
         mSessionFullListener = sessionFullListener;
+
+    }
+    public void setRefreshListListener(final RefreshListListener refreshListListener) {
+        mRefreshListListener = refreshListListener;
     }
 
     public interface MessageListener {
@@ -220,6 +248,10 @@ public class SignalingChannel {
 
     public interface PeerDisconnectListener {
         public void onPeerDisconnect(final PeerChannel peerChannel);
+    }
+
+    public interface RefreshListListener {
+        public void onRefresh(String helperListJson);
     }
 
     public class PeerChannel {

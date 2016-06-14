@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/username"
-            android:layout_marginTop="30dp"
             android:hint="@string/login_username_hint"/>
 
         <android.support.v7.widget.AppCompatEditText
@@ -48,40 +47,22 @@
             android:layout_marginLeft="50dp"
             android:text="Are you a Helper or a Visual Impairer?"/>
 
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:id="@+id/vi_radio_button"
-            android:checkedButton="@+id/radio_button_helper">
-
-            <RadioButton
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="Helper"
-                android:id="@+id/radio_button_helper">
-
-            </RadioButton>
-
-            <RadioButton
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="Visual Impairer"
-                android:id="@+id/radio_button_vi">
-
-            </RadioButton>
-
-        </RadioGroup>
-
         <android.support.v7.widget.AppCompatButton
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:id="@+id/registerbtn"
+            android:id="@+id/registerbtnv"
             android:layout_gravity="center"
             android:textColor="#ffffff"
             android:textAlignment="center"
-            android:text="@string/login_register_button"/>
+            android:text="@string/login_register_button_v"/>
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/registerbtnh"
+            android:layout_gravity="center"
+            android:textColor="#ffffff"
+            android:textAlignment="center"
+            android:text="@string/login_register_button_h"/>
         <android.support.v7.widget.AppCompatButton
             android:layout_width="300dp"
             android:layout_height="wrap_content"

@@ -80,13 +80,13 @@ public class LoginActivity extends AppCompatActivity {
                             String grav = json.getString("grav");
                             String username = json.getString("username");
                             String role = json.getString("role");
-                            float rate = Float.valueOf(json.getString("rate"));
+                            String rate = json.getString("rate");
                             SharedPreferences.Editor edit = pref.edit();
                             //Storing Data using SharedPreferences
                             edit.putString("token", token);
                             edit.putString("grav", grav);
                             edit.putString("username", username);
-                            edit.putFloat("rate", rate);
+                            edit.putString("rate", rate);
                             edit.commit();
                             Intent homeActivity;
                             if (role.equals("vi")) {

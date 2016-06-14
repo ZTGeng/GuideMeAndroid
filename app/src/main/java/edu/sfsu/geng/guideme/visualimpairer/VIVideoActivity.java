@@ -14,10 +14,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.ListViewCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.ericsson.research.owr.Owr;
@@ -41,6 +46,7 @@ import com.google.android.gms.location.LocationServices;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,11 +64,13 @@ public class VIVideoActivity extends AppCompatActivity implements
         SignalingChannel.SessionFullListener,
         SignalingChannel.MessageListener,
         SignalingChannel.PeerDisconnectListener,
+        SignalingChannel.RefreshListListener,
         RtcSession.OnLocalCandidateListener,
         RtcSession.OnLocalDescriptionListener,
         LocationListener,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener
+        GoogleApiClient.OnConnectionFailedListener,
+        AdapterView.OnItemClickListener
 {
 
     private static final String TAG = "VIVideo";
@@ -79,15 +87,17 @@ public class VIVideoActivity extends AppCompatActivity implements
         Owr.runInBackground();
     }
 
-    private AppCompatTextView connectText;
-    private AppCompatButton acceptButton, declineButton;
+//    private AppCompatTextView connectText;
+//    private AppCompatButton acceptButton, declineButton;
 //    FloatingActionButton fab;
 //    private FloatingActionButton fabAddFriend;
     private AppCompatButton quitButton;
     private AppCompatButton toggleLocationButton;
     private AppCompatButton addFriendButton;
-    private boolean isSendingLocation;
+    private ListViewCompat waitingHelperList;
+    private HelperListAdapter helperListAdapter;
 
+    private boolean isSendingLocation;
     private boolean isVideoStart;
     private String helperName;
 
@@ -158,38 +168,43 @@ public class VIVideoActivity extends AppCompatActivity implements
         }
         isSendingLocation = true;
 
-        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
-        if (connectText != null) {
-            connectText.setText(R.string.connect_hint_vi);
-        } else {
-            Log.d(TAG, "onCreate: connectText is null!");
-        }
+        waitingHelperList = (ListViewCompat) findViewById(R.id.waiting_helper_list);
+        helperListAdapter = new HelperListAdapter(this, -1, new ArrayList<JSONObject>());
+        waitingHelperList.setAdapter(helperListAdapter);
+        waitingHelperList.setOnItemClickListener(this);
 
-        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
-        if (acceptButton != null) {
-            acceptButton.setEnabled(false);
-            acceptButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onAcceptClicked(v);
-                }
-            });
-        } else {
-            Log.d(TAG, "onCreate: acceptButton is null!");
-        }
-
-        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
-        if (declineButton != null) {
-            declineButton.setEnabled(false);
-            declineButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDeclineClicked(v);
-                }
-            });
-        } else {
-            Log.d(TAG, "onCreate: declineButton is null!");
-        }
+//        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
+//        if (connectText != null) {
+//            connectText.setText(R.string.connect_hint_vi);
+//        } else {
+//            Log.d(TAG, "onCreate: connectText is null!");
+//        }
+//
+//        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
+//        if (acceptButton != null) {
+//            acceptButton.setEnabled(false);
+//            acceptButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    onAcceptClicked(v);
+//                }
+//            });
+//        } else {
+//            Log.d(TAG, "onCreate: acceptButton is null!");
+//        }
+//
+//        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
+//        if (declineButton != null) {
+//            declineButton.setEnabled(false);
+//            declineButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    onDeclineClicked(v);
+//                }
+//            });
+//        } else {
+//            Log.d(TAG, "onCreate: declineButton is null!");
+//        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 //        mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -290,9 +305,9 @@ public class VIVideoActivity extends AppCompatActivity implements
 
                 updateVideoView(true);
                 mRtcSession.start(mStreamSet);
-                connectText.setText(R.string.connect_start_vi);
-                acceptButton.setEnabled(false);
-                declineButton.setEnabled(false);
+//                connectText.setText(R.string.connect_start_vi);
+//                acceptButton.setEnabled(false);
+//                declineButton.setEnabled(false);
 
                 params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("username", usernameStr));
@@ -323,8 +338,8 @@ public class VIVideoActivity extends AppCompatActivity implements
             Log.d(TAG, "onDeclineClicked: mSignalingChannel is null!");
         }
         mPeerChannel = null;
-        acceptButton.setEnabled(false);
-        declineButton.setEnabled(false);
+//        acceptButton.setEnabled(false);
+//        declineButton.setEnabled(false);
 //        fabAddFriend.setEnabled(false);
         addFriendButton.setEnabled(false);
     }
@@ -405,10 +420,11 @@ public class VIVideoActivity extends AppCompatActivity implements
     private void join() {
         Log.d(TAG, "onJoin");
 
-        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, "v");
         mSignalingChannel.setJoinListener(this);
         mSignalingChannel.setDisconnectListener(this);
         mSignalingChannel.setSessionFullListener(this);
+        mSignalingChannel.setRefreshListListener(this);
 
         mStreamSet = SimpleStreamSet.defaultConfig(wantAudio, wantVideo);
         //select back camera
@@ -430,11 +446,13 @@ public class VIVideoActivity extends AppCompatActivity implements
         mRtcSession.setOnLocalDescriptionListener(this);
 
         String message = peerChannel.getPeerId() + " joined.";
-        connectText.setText(message);
-        acceptButton.setEnabled(true);
-        declineButton.setEnabled(true);
+//        connectText.setText(message);
+//        acceptButton.setEnabled(true);
+//        declineButton.setEnabled(true);
 //        fabAddFriend.setEnabled(true);
         addFriendButton.setEnabled(true);
+
+        onAcceptClicked(null);
     }
 
     @Override
@@ -448,11 +466,12 @@ public class VIVideoActivity extends AppCompatActivity implements
         mPeerChannel = null;
         updateVideoView(false);
 
-        connectText.setText(R.string.connect_hint_vi);
-        acceptButton.setEnabled(false);
-        declineButton.setEnabled(false);
+//        connectText.setText(R.string.connect_hint_vi);
+//        acceptButton.setEnabled(false);
+//        declineButton.setEnabled(false);
         addFriendButton.setEnabled(false);
     }
+
 
     @Override
     public synchronized void onMessage(final JSONObject json) {
@@ -484,9 +503,6 @@ public class VIVideoActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         }
-//        if (json.has("orientation")) {
-//                handleOrientation(json.getInt("orientation"));
-//        }
         if (json.has("add")) {
             Log.v(TAG, "Add Friend Request!");
             try {
@@ -631,14 +647,14 @@ public class VIVideoActivity extends AppCompatActivity implements
         params.add(new BasicNameValuePair("username", usernameStr));
         ServerRequest sr = new ServerRequest();
         JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/deleteroom", params);
-        if (json != null) {
-            try {
-                String jsonStr = json.getString("response");
-//                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (json != null) {
+//            try {
+//                String jsonStr = json.getString("response");
+////                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         if (isVideoStart) {
             Intent rateActivity = new Intent(VIVideoActivity.this, VIRateActivity.class);
@@ -801,6 +817,66 @@ public class VIVideoActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * When a waiting helper on the list has been clicked.
+     * <p/>
+     * Implementers can call getItemAtPosition(position) if they need
+     * to access the data associated with the selected item.
+     *
+     * @param parent   The AdapterView where the click happened.
+     * @param view     The view within the AdapterView that was clicked (this
+     *                 will be a view provided by the adapter)
+     * @param position The position of the view in the adapter.
+     * @param id       The row id of the item that was clicked.
+     */
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (isVideoStart) return;
+        Log.d(TAG, "VI click on a helper on the list");
+        final JSONObject helper = ((HelperListAdapter) parent.getAdapter()).getItem(position);
+        try {
+            final String username = helper.getString("username");
+//            final float rate = (float) helper.getDouble("rate");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(String.format(getResources().getString(R.string.confirm_accept_helper), username));
+            builder.setPositiveButton(R.string.accept_button, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    if (mSignalingChannel != null) {
+                        mSignalingChannel.select(Config.VIDEO_SERVER_ADDRESS, sessionId, username);
+                    } else {
+                        Log.d(TAG, "onItemClick: mSignalingChannel is null!");
+                    }
+                }
+            });
+            builder.setNegativeButton(R.string.decline_button, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User cancelled the dialog
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /* When a helper join or leave the waiting list, need to refresh it */
+    @Override
+    public void onRefresh(String helperListJson) {
+//        System.out.println("===================");
+//        System.out.println(helperListJson);
+        helperListAdapter.clear();
+        JSONArray helperArray = null;
+        try {
+            helperArray = new JSONArray(helperListJson);
+            for (int i = 0; i < helperArray.length(); i++) {
+                helperListAdapter.add(helperArray.getJSONObject(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 //        boolean permissionsGranted = true; //if all permissions are granted
@@ -816,5 +892,43 @@ public class VIVideoActivity extends AppCompatActivity implements
 //            startLocationUpdates();
 //        }
 //    }
+
+    private class HelperListAdapter extends ArrayAdapter<JSONObject> {
+
+        private final Context context;
+        private final List<JSONObject> helpers;
+
+        /**
+         * Constructor
+         *
+         * @param context  The current context.
+         * @param resource The resource ID for a layout file containing a TextView to use when
+         *                 instantiating views.
+         * @param objects  The objects to represent in the ListView.
+         */
+        public HelperListAdapter(Context context, int resource, List<JSONObject> objects) {
+            super(context, resource, objects);
+            this.context = context;
+            this.helpers = objects;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View rowView = inflater.inflate(R.layout.helper_list_item, parent, false);
+            AppCompatTextView usernameText = (AppCompatTextView) rowView.findViewById(R.id.helper_item_username);
+            AppCompatTextView ratingText = (AppCompatTextView) rowView.findViewById(R.id.helper_item_rating);
+
+            try {
+                JSONObject helper = helpers.get(position);
+                usernameText.setText(helper.getString("username"));
+                ratingText.setText(String.valueOf(helper.getDouble("rate")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return rowView;
+        }
+    }
 
 }

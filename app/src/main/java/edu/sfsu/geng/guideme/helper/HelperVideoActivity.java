@@ -97,11 +97,8 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private SimpleStreamSet mStreamSet;
     private VideoView mRemoteView;
     private RtcConfig mRtcConfig;
-    private String sessionId;
-    private String usernameStr;
 
-    private boolean isVideoStart;
-    private String viName;
+    private String sessionId, usernameStr, viName, myRate;
 
     private List<NameValuePair> params;
 
@@ -109,7 +106,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private final static boolean wantVideo = true;
     public static final int LOCATION_PERMISSION = 15;
 
-    private boolean isNavigation, beforeGetLocation;
+    private boolean isNavigation, isVideoStart, beforeGetLocation;
     private GoogleMap mMap;
     private Marker curLocationMarker, destinationMarker;
     private String destination;
@@ -124,6 +121,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
             beforeGetLocation = true;
             destination = getIntent().getStringExtra("des");
         }
+        myRate = getIntent().getStringExtra("myRate");
 
         setContentView(R.layout.activity_helper_video);
 
@@ -299,7 +297,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private void join() {
         Log.d(TAG, "onJoin");
 
-        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, myRate);
         mSignalingChannel.setJoinListener(this);
         mSignalingChannel.setDisconnectListener(this);
         mSignalingChannel.setSessionFullListener(this);
@@ -680,7 +678,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
                     }
                 }
 
-                Polyline polylineToAdd = mMap.addPolyline(new PolylineOptions().addAll(lines).width(3).color(Color.RED));
+                Polyline polylineToAdd = mMap.addPolyline(new PolylineOptions().addAll(lines).width(3).color(Color.BLUE));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

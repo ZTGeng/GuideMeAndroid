@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -53,8 +54,8 @@ public class HelperHomeActivity extends AppCompatActivity
     private static final String TAG = "HelperHome";
 
     SharedPreferences pref;
-    String token, grav, usernameStr, oldpassStr, newpassStr;//, topicStr;
-    float rateFloat;
+    String token, grav, usernameStr, oldpassStr, newpassStr, rateStr;//, topicStr;
+//    float rateFloat;
     AppCompatButton chgPasswordBtn, chgpassfrBtn, cancelBtn, logoutBtn, getRoomListBtn;
     Dialog dlg;
     AppCompatEditText oldpassEditText, newpassEditText;
@@ -83,7 +84,7 @@ public class HelperHomeActivity extends AppCompatActivity
         grav = pref.getString("grav", "");
         usernameStr = pref.getString("username", "");
         usernameText.setText(usernameStr);
-        rateFloat = pref.getFloat("rate", 5f);
+        rateStr = pref.getString("rate", "5.0");
 
 
 //        topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
@@ -287,7 +288,7 @@ public class HelperHomeActivity extends AppCompatActivity
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.v(TAG, "onItemClick");
+        Log.v(TAG, "Helper click on a room");
         final JSONObject room = ((RoomListAdapter) parent.getAdapter()).getItem(position);
         try {
             final String roomId = room.getString("roomId");
@@ -303,6 +304,7 @@ public class HelperHomeActivity extends AppCompatActivity
                     helperVideoActivity.putExtra("sessionId", roomId);
                     helperVideoActivity.putExtra("isNavigation", isNavigation);
                     helperVideoActivity.putExtra("des", des);
+                    helperVideoActivity.putExtra("myRate", rateStr);
                     startActivity(helperVideoActivity);
                     finish();
                 }
@@ -356,6 +358,7 @@ public class HelperHomeActivity extends AppCompatActivity
 //                tagsText.setText(room.getString("tags"));
                 ratingBar.setRating((float) room.getDouble("rate"));
                 if (room.getBoolean("isNavigation")) {
+                    isNaviImage.setBackgroundColor(Color.BLUE);
                     isNaviImage.setImageResource(android.R.drawable.ic_dialog_map);
                 }
             } catch (JSONException e) {

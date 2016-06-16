@@ -238,10 +238,11 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private void quit() {
         Log.d(TAG, "Quit");
         if (mSignalingChannel != null) {
-            if (isVideoStart && mPeerChannel != null) {
-                mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
-            }
-            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+//            if (isVideoStart && mPeerChannel != null) {
+//                mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
+//            }
+//            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+            mSignalingChannel.quit();
         } else {
             Log.d(TAG, "onFabClicked: mSignalingChannel is null!");
         }
@@ -297,10 +298,11 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private void join() {
         Log.d(TAG, "onJoin");
 
-        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, myRate);
+        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, false);
         mSignalingChannel.setJoinListener(this);
         mSignalingChannel.setDisconnectListener(this);
-        mSignalingChannel.setSessionFullListener(this);
+//        mSignalingChannel.setSessionFullListener(this);
+        mSignalingChannel.join(myRate);
 
         mStreamSet = SimpleStreamSet.defaultConfig(wantAudio, wantVideo);
         mRemoteView = mStreamSet.createRemoteView();
@@ -544,7 +546,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
 
         if (isVideoStart) {
             Intent rateActivity = new Intent(HelperVideoActivity.this, HelperRateActivity.class);
-            rateActivity.putExtra("vviName", viName);
+            rateActivity.putExtra("viName", viName);
             startActivity(rateActivity);
         } else {
 //            Intent rateActivity = new Intent(HelperVideoActivity.this, HelperRateActivity.class);
@@ -553,6 +555,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
             Intent homeActivity = new Intent(HelperVideoActivity.this, HelperHomeActivity.class);
             startActivity(homeActivity);
         }
+        finish();
     }
 
     @Override

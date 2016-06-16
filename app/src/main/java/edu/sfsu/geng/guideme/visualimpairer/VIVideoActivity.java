@@ -317,7 +317,7 @@ public class VIVideoActivity extends AppCompatActivity implements
                 if (json != null) {
                     try {
                         String jsonStr = json.getString("response");
-                        Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -330,19 +330,19 @@ public class VIVideoActivity extends AppCompatActivity implements
         }
     }
 
-    public void onDeclineClicked(final View view) {
-        Log.d(TAG, "onRefuseClicked");
-        if (mSignalingChannel != null) {
-            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
-        } else {
-            Log.d(TAG, "onDeclineClicked: mSignalingChannel is null!");
-        }
-        mPeerChannel = null;
-//        acceptButton.setEnabled(false);
-//        declineButton.setEnabled(false);
-//        fabAddFriend.setEnabled(false);
-        addFriendButton.setEnabled(false);
-    }
+//    public void onDeclineClicked(final View view) {
+//        Log.d(TAG, "onRefuseClicked");
+//        if (mSignalingChannel != null) {
+//            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
+//        } else {
+//            Log.d(TAG, "onDeclineClicked: mSignalingChannel is null!");
+//        }
+//        mPeerChannel = null;
+////        acceptButton.setEnabled(false);
+////        declineButton.setEnabled(false);
+////        fabAddFriend.setEnabled(false);
+//        addFriendButton.setEnabled(false);
+//    }
 
     public void onQuitClicked(final View view) {
         Log.d(TAG, "Quit button onClicked");
@@ -367,10 +367,11 @@ public class VIVideoActivity extends AppCompatActivity implements
     private void quit() {
         Log.d(TAG, "Quit");
         if (mSignalingChannel != null) {
-            if (mPeerChannel != null) {
-                mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
-            }
-            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+//            if (mPeerChannel != null) {
+//                mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, mPeerChannel.getPeerId());
+//            }
+//            mSignalingChannel.kickoff(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr);
+            mSignalingChannel.quit();
         } else {
             Log.d(TAG, "onFabClicked: mSignalingChannel is null!");
         }
@@ -420,11 +421,12 @@ public class VIVideoActivity extends AppCompatActivity implements
     private void join() {
         Log.d(TAG, "onJoin");
 
-        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, "v");
+        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, true);
         mSignalingChannel.setJoinListener(this);
         mSignalingChannel.setDisconnectListener(this);
-        mSignalingChannel.setSessionFullListener(this);
+//        mSignalingChannel.setSessionFullListener(this);
         mSignalingChannel.setRefreshListListener(this);
+        mSignalingChannel.join("");
 
         mStreamSet = SimpleStreamSet.defaultConfig(wantAudio, wantVideo);
         //select back camera
@@ -667,6 +669,7 @@ public class VIVideoActivity extends AppCompatActivity implements
             Intent homeActivity = new Intent(VIVideoActivity.this, VIHomeActivity.class);
             startActivity(homeActivity);
         }
+        finish();
     }
 
     @Override
@@ -842,7 +845,7 @@ public class VIVideoActivity extends AppCompatActivity implements
             builder.setPositiveButton(R.string.accept_button, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     if (mSignalingChannel != null) {
-                        mSignalingChannel.select(Config.VIDEO_SERVER_ADDRESS, sessionId, username);
+                        mSignalingChannel.select(username);
                     } else {
                         Log.d(TAG, "onItemClick: mSignalingChannel is null!");
                     }

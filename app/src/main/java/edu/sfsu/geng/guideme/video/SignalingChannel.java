@@ -30,10 +30,12 @@ import java.util.Random;
 public class SignalingChannel {
     public static final String TAG = "EventSource";
 
+    private boolean isV;
+    private String baseUrl, session,  userId;
     private final HttpClient mHttpSendClient = new DefaultHttpClient();
     private final Handler mMainHandler;
     private final String mClientToServerUrl;
-    private final String mServerToClientUrl;
+//    private final String mServerToClientUrl;
     private Handler mSendHandler;
     private InputStream mEventStream;
     private Map<String, PeerChannel> mPeerChannels = new HashMap<>();
@@ -42,32 +44,26 @@ public class SignalingChannel {
     private SessionFullListener mSessionFullListener;
     private RefreshListListener mRefreshListListener;
 
-    public SignalingChannel(String baseUrl, String session, String userId, String roleOrRate) {
-//        String userId = new BigInteger(40, new Random()).toString(32);
-        mServerToClientUrl = baseUrl + "/stoc/" + session + "/" + userId + "/" + roleOrRate;
+    public SignalingChannel(String baseUrl, String session, String userId, boolean isV) {
+        this.baseUrl = baseUrl;
+        this.session = session;
+        this.userId = userId;
+        this.isV = isV;
         mClientToServerUrl = baseUrl + "/ctos/" + session + "/" + userId;
         mMainHandler = new Handler(Looper.getMainLooper());
         Thread sendThread = new SendThread();
         sendThread.start();
-        open();
     }
 
-    private class SendThread extends Thread {
-        @Override
-        public void run() {
-            Looper.prepare();
-            mSendHandler = new Handler();
-            Looper.loop();
-            Log.d(TAG, "SendThread: quit");
-        }
-    }
-
-    private void open() {
+    public void join(String rate) {
+        final String joinUrl = isV ?
+                baseUrl + "/vjoin/" + session + "/" + userId :
+                baseUrl + "/hjoin/" + session + "/" + userId + "/" + rate;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 HttpClient httpClient = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(mServerToClientUrl);
+                HttpGet httpGet = new HttpGet(joinUrl);
 
                 try {
                     HttpResponse httpResponse = httpClient.execute(httpGet);
@@ -105,26 +101,89 @@ public class SignalingChannel {
         }).start();
     }
 
-    public void kickoff(String baseUrl, String session, String peerId) {
-        final String mKickoffUrl = baseUrl + "/kickoff/" + session + "/" + peerId;
+//    public SignalingChannel(String baseUrl, String session, String userId, String roleOrRate) {
+//        String userId = new BigInteger(40, new Random()).toString(32);
+//        mServerToClientUrl = baseUrl + "/stoc/" + session + "/" + userId + "/" + roleOrRate;
+//        mClientToServerUrl = baseUrl + "/ctos/" + session + "/" + userId;
+//        mMainHandler = new Handler(Looper.getMainLooper());
+//        Thread sendThread = new SendThread();
+//        sendThread.start();
+//        open();
+//    }
+
+    private class SendThread extends Thread {
+        @Override
+        public void run() {
+            Looper.prepare();
+            mSendHandler = new Handler();
+            Looper.loop();
+            Log.d(TAG, "SendThread: quit");
+        }
+    }
+
+//    private void open() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                HttpClient httpClient = new DefaultHttpClient();
+//                HttpGet httpGet = new HttpGet(mServerToClientUrl);
+//
+//                try {
+//                    HttpResponse httpResponse = httpClient.execute(httpGet);
+//                    HttpEntity httpEntity = httpResponse.getEntity();
+//
+//                    if (httpEntity != null) {
+//                        mEventStream = httpEntity.getContent();
+//                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(mEventStream));
+//                        readEventStream(bufferedReader);
+//                    }
+//                } catch (IOException exception) {
+//                    Log.e(TAG, "SSE: " + exception);
+//                    exception.printStackTrace();
+//                } finally {
+//                    if (mEventStream != null) {
+//                        try {
+//                            mEventStream.close();
+//                        } catch (IOException ignored) {
+//                        }
+//                        mEventStream = null;
+//                    }
+//                    mMainHandler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            for (PeerChannel peerChannel : mPeerChannels.values()) {
+//                                peerChannel.onDisconnect();
+//                            }
+//                            if (mDisconnectListener != null) {
+//                                mDisconnectListener.onDisconnect();
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        }).start();
+//    }
+
+    public void quit() {
+        final String quitUrl = baseUrl + (isV ? "/vquit/" : "/hquit/") + session + "/" + userId;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 HttpClient httpClient = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(mKickoffUrl);
+                HttpGet httpGet = new HttpGet(quitUrl);
 
                 try {
                     HttpResponse httpResponse = httpClient.execute(httpGet);
                     HttpEntity httpEntity = httpResponse.getEntity();
                 } catch (IOException exception) {
-                    Log.e(TAG, "Kickoff Error: " + exception);
+                    Log.e(TAG, "Quit Error: " + exception);
                     exception.printStackTrace();
                 }
             }
         }).start();
     }
 
-    public void select(String baseUrl, String session, String peerId) {
+    public void select(String peerId) {
         final String mSelectUrl = baseUrl + "/select/" + session + "/" + peerId;
         new Thread(new Runnable() {
             @Override
@@ -196,7 +255,7 @@ public class SignalingChannel {
             if (peerChannel != null) {
                 peerChannel.onDisconnect();
             }
-        } else if (event.equals("kicked")) {
+        } else if (event.equals("quit")) {
             if (mDisconnectListener != null) {
                 mDisconnectListener.onDisconnect();
             }

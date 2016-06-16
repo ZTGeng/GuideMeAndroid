@@ -98,7 +98,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private VideoView mRemoteView;
     private RtcConfig mRtcConfig;
 
-    private String sessionId, usernameStr, viName, myRate;
+    private String serverBaseUrl, sessionId, usernameStr, viName, myRate;
 
     private List<NameValuePair> params;
 
@@ -122,6 +122,9 @@ public class HelperVideoActivity extends AppCompatActivity implements
             destination = getIntent().getStringExtra("des");
         }
         myRate = getIntent().getStringExtra("myRate");
+
+        serverBaseUrl = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE)
+                .getString("serverBaseUrl", Config.VIDEO_SERVER_ADDRESS);
 
         setContentView(R.layout.activity_helper_video);
 
@@ -298,7 +301,7 @@ public class HelperVideoActivity extends AppCompatActivity implements
     private void join() {
         Log.d(TAG, "onJoin");
 
-        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, false);
+        mSignalingChannel = new SignalingChannel(serverBaseUrl, sessionId, usernameStr, false);
         mSignalingChannel.setJoinListener(this);
         mSignalingChannel.setDisconnectListener(this);
 //        mSignalingChannel.setSessionFullListener(this);

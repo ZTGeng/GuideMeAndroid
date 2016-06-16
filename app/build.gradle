@@ -31,13 +31,13 @@ dependencies {
     //    compile 'com.android.support:appcompat-v7:23.2.1'
     //    See settings.gradle for local dev instructions
     compile project(':openwebrtc-android-sdk')
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
-    compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:support-v4:23.4.0'
 }
 apply plugin: 'com.google.gms.google-services'
 

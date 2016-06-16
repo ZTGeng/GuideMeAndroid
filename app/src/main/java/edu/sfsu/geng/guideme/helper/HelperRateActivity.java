@@ -27,7 +27,7 @@ public class HelperRateActivity extends AppCompatActivity {
 
     SharedPreferences pref;
 
-    private AppCompatButton submitBtn;
+    private AppCompatButton submitBtn, cancelBtn;
     private List<NameValuePair> params;
     private RatingBar ratingBar;
     private float rateFloat;
@@ -57,6 +57,14 @@ public class HelperRateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onSubmit(v);
+            }
+        });
+
+        cancelBtn = (AppCompatButton) findViewById(R.id.helper_rate_cancel_btn);
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCancel(v);
             }
         });
 
@@ -94,6 +102,12 @@ public class HelperRateActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    public void onCancel(View v) {
+        Intent homeActivity = new Intent(HelperRateActivity.this, HelperHomeActivity.class);
+        startActivity(homeActivity);
+        finish();
     }
 
 }

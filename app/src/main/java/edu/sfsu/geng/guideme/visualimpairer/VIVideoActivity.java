@@ -87,10 +87,6 @@ public class VIVideoActivity extends AppCompatActivity implements
         Owr.runInBackground();
     }
 
-//    private AppCompatTextView connectText;
-//    private AppCompatButton acceptButton, declineButton;
-//    FloatingActionButton fab;
-//    private FloatingActionButton fabAddFriend;
     private AppCompatButton quitButton;
     private AppCompatButton toggleLocationButton;
     private AppCompatButton addFriendButton;
@@ -102,13 +98,12 @@ public class VIVideoActivity extends AppCompatActivity implements
     private String helperName;
 
     private SignalingChannel mSignalingChannel;
-//    private InputMethodManager mInputMethodManager;
-//    private WindowManager mWindowManager;
     private SignalingChannel.PeerChannel mPeerChannel;
     private RtcSession mRtcSession;
     private SimpleStreamSet mStreamSet;
-    private VideoView mSelfView;
+//    private VideoView mSelfView;
     private RtcConfig mRtcConfig;
+    private String serverBaseUrl;
     private String sessionId;
     private String usernameStr;
     private boolean isNavigation;
@@ -130,14 +125,12 @@ public class VIVideoActivity extends AppCompatActivity implements
         sessionId = getIntent().getStringExtra("sessionId");
         isNavigation = getIntent().getBooleanExtra("isNavigation", false);
 
+        serverBaseUrl = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE)
+                .getString("serverBaseUrl", Config.VIDEO_SERVER_ADDRESS);
+
         SharedPreferences pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
         usernameStr = pref.getString("username", "");
 
-        //fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fabAddFriend = (FloatingActionButton) findViewById(R.id.fab_add_friend);
-//        if (fabAddFriend != null) {
-//            fabAddFriend.setEnabled(false);
-//        }
         quitButton = (AppCompatButton) findViewById(R.id.quit_btn);
         if (quitButton != null) {
             quitButton.setOnClickListener(new View.OnClickListener() {
@@ -173,38 +166,6 @@ public class VIVideoActivity extends AppCompatActivity implements
         waitingHelperList.setAdapter(helperListAdapter);
         waitingHelperList.setOnItemClickListener(this);
 
-//        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
-//        if (connectText != null) {
-//            connectText.setText(R.string.connect_hint_vi);
-//        } else {
-//            Log.d(TAG, "onCreate: connectText is null!");
-//        }
-//
-//        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
-//        if (acceptButton != null) {
-//            acceptButton.setEnabled(false);
-//            acceptButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    onAcceptClicked(v);
-//                }
-//            });
-//        } else {
-//            Log.d(TAG, "onCreate: acceptButton is null!");
-//        }
-//
-//        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
-//        if (declineButton != null) {
-//            declineButton.setEnabled(false);
-//            declineButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    onDeclineClicked(v);
-//                }
-//            });
-//        } else {
-//            Log.d(TAG, "onCreate: declineButton is null!");
-//        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 //        mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -239,61 +200,9 @@ public class VIVideoActivity extends AppCompatActivity implements
         join();
     }
 
-//    @Override
-//    public void onConfigurationChanged(final Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        setContentView(R.layout.activity_vi_video);
-//
-//        quitButton = (AppCompatButton) findViewById(R.id.quit_btn);
-//        toggleLocationButton = (AppCompatButton) findViewById(R.id.toggle_location_btn);
-//        addFriendButton = (AppCompatButton) findViewById(R.id.add_friend_btn);
-//        if (addFriendButton != null) {
-//            addFriendButton.setEnabled(false);
-//        }
-//
-//        connectText = (AppCompatTextView) findViewById(R.id.connect_text);
-//        if (connectText != null) {
-//            connectText.setText(R.string.connect_hint_vi);
-//        } else {
-//            Log.d(TAG, "onConfigurationChanged: connectText is null!");
-//        }
-//
-//        acceptButton = (AppCompatButton) findViewById(R.id.accept_btn);
-//        if (acceptButton != null) {
-//            acceptButton.setEnabled(false);
-//        } else {
-//            Log.d(TAG, "onConfigurationChanged: acceptButton is null!");
-//        }
-//
-//        declineButton = (AppCompatButton) findViewById(R.id.decline_btn);
-//        if (declineButton != null) {
-//            declineButton.setEnabled(false);
-//        } else {
-//            Log.d(TAG, "onConfigurationChanged: declineButton is null!");
-//        }
-//
-//        updateVideoView(true);
-//    }
 
-    private void updateVideoView(boolean running) {
-//        if (mStreamSet != null) {
-//            TextureView selfView = (TextureView) findViewById(R.id.self_view);
-//            if (selfView != null) {
-//                selfView.setVisibility(running ? View.VISIBLE : View.INVISIBLE);
-//            } else {
-//                Log.d(TAG, "updateVideoView: selfView is null!");
-//            }
-//            if (running) {
-//                Log.d(TAG, "setting selfView: " + selfView);
-//                mSelfView.setView(selfView);
-//            } else {
-//                Log.d(TAG, "stopping selfView");
-//                mSelfView.stop();
-//            }
-//        } else {
-//            Log.e(TAG, "updateVideoView: mStreamSet is null!");
-//        }
-    }
+//    private void updateVideoView(boolean running) {
+//    }
 
 
     public void onAcceptClicked(final View view) {
@@ -303,7 +212,7 @@ public class VIVideoActivity extends AppCompatActivity implements
                 isVideoStart = true;
                 helperName = mPeerChannel.getPeerId();
 
-                updateVideoView(true);
+//                updateVideoView(true);
                 mRtcSession.start(mStreamSet);
 //                connectText.setText(R.string.connect_start_vi);
 //                acceptButton.setEnabled(false);
@@ -421,7 +330,7 @@ public class VIVideoActivity extends AppCompatActivity implements
     private void join() {
         Log.d(TAG, "onJoin");
 
-        mSignalingChannel = new SignalingChannel(Config.VIDEO_SERVER_ADDRESS, sessionId, usernameStr, true);
+        mSignalingChannel = new SignalingChannel(serverBaseUrl, sessionId, usernameStr, true);
         mSignalingChannel.setJoinListener(this);
         mSignalingChannel.setDisconnectListener(this);
 //        mSignalingChannel.setSessionFullListener(this);
@@ -466,7 +375,7 @@ public class VIVideoActivity extends AppCompatActivity implements
             Log.d(TAG, "onPeerDisconnect: mRtcSession is null!");
         }
         mPeerChannel = null;
-        updateVideoView(false);
+//        updateVideoView(false);
 
 //        connectText.setText(R.string.connect_hint_vi);
 //        acceptButton.setEnabled(false);
@@ -635,7 +544,7 @@ public class VIVideoActivity extends AppCompatActivity implements
     public void onDisconnect() {
         Log.d(TAG, "onDisconnect");
         Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show();
-        updateVideoView(false);
+//        updateVideoView(false);
         mStreamSet = null;
         if (mRtcSession != null) {
             mRtcSession.stop();

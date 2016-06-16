@@ -27,7 +27,7 @@ public class VIRateActivity extends AppCompatActivity {
 
     SharedPreferences pref;
 
-    private AppCompatButton submitBtn;
+    private AppCompatButton submitBtn, cancelBtn;
     private List<NameValuePair> params;
     private AppCompatButton decreaseBtn, increaseBtn;
     private TextView rateNumberText;
@@ -78,6 +78,14 @@ public class VIRateActivity extends AppCompatActivity {
             }
         });
 
+        cancelBtn = (AppCompatButton) findViewById(R.id.vi_rate_cancel_btn);
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCancel(v);
+            }
+        });
+
     }
 
     public void onSubmit(View v) {
@@ -112,5 +120,11 @@ public class VIRateActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    public void onCancel(View v) {
+        Intent homeActivity = new Intent(VIRateActivity.this, VIHomeActivity.class);
+        startActivity(homeActivity);
+        finish();
     }
 }

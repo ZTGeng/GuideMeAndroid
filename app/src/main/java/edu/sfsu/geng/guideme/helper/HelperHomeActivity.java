@@ -45,21 +45,20 @@ import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
+import edu.sfsu.geng.guideme.ServerDialogFragment;
 import edu.sfsu.geng.guideme.login.LoginActivity;
 import edu.sfsu.geng.guideme.ServerRequest;
 
 public class HelperHomeActivity extends AppCompatActivity
-        implements AdapterView.OnItemClickListener {
+        implements AdapterView.OnItemClickListener, ServerDialogFragment.ServerDialogListener {
 
     private static final String TAG = "HelperHome";
 
     SharedPreferences pref;
-    String token, grav, usernameStr, oldpassStr, newpassStr, rateStr;//, topicStr;
-//    float rateFloat;
+    String token, grav, usernameStr, oldpassStr, newpassStr, rateStr;
     AppCompatButton chgPasswordBtn, chgpassfrBtn, cancelBtn, logoutBtn, getRoomListBtn;
     Dialog dlg;
     AppCompatEditText oldpassEditText, newpassEditText;
-//    AppCompatSpinner topicSpinner;
     AppCompatTextView usernameText;
 
     List<NameValuePair> params;
@@ -85,16 +84,6 @@ public class HelperHomeActivity extends AppCompatActivity
         usernameStr = pref.getString("username", "");
         usernameText.setText(usernameStr);
         rateStr = pref.getString("rate", "5.0");
-
-
-//        topicSpinner = (AppCompatSpinner) findViewById(R.id.topic_spinner);
-//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-//                R.array.topics_array, android.R.layout.simple_spinner_item);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        topicSpinner.setAdapter(adapter);
-//
-//        topicStr = "General";
-//        topicSpinner.setOnItemSelectedListener(this);
 
         roomList = (ListViewCompat) findViewById(R.id.room_list);
         final RoomListAdapter roomListAdapter = new RoomListAdapter(this, -1, new ArrayList<JSONObject>());
@@ -185,6 +174,10 @@ public class HelperHomeActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.change_server_menu:
+                ServerDialogFragment dialogFragment = new ServerDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "ServerDialogFragment");
+                return true;
             case R.id.change_password_menu:
                 dlg = new Dialog(HelperHomeActivity.this);
                 dlg.setContentView(R.layout.change_password_frag);
@@ -246,36 +239,6 @@ public class HelperHomeActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * <p>Callback method to be invoked when an item in this view has been
-     * selected. This callback is invoked only when the newly selected
-     * position is different from the previously selected position or if
-     * there was no selected item.</p>
-     * <p/>
-     * Impelmenters can call getItemAtPosition(position) if they need to access the
-     * data associated with the selected item.
-     *
-     * @param parent   The AdapterView where the selection happened
-     * @param view     The view within the AdapterView that was clicked
-     * @param position The position of the view in the adapter
-     * @param id       The row id of the item that is selected
-     */
-//    @Override
-//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//        topicStr = parent.getAdapter().getItem(position).toString();
-//    }
-
-    /**
-     * Callback method to be invoked when the selection disappears from this
-     * view. The selection can disappear for instance when touch is activated
-     * or when the adapter becomes empty.
-     *
-     * @param parent The AdapterView that now contains no selected item.
-     */
-//    @Override
-//    public void onNothingSelected(AdapterView<?> parent) {
-//
-//    }
 
     /**
      * Helper clicks one of the Rooms.
@@ -319,6 +282,16 @@ public class HelperHomeActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onServerChanged(String serverUrl) {
+        pref.edit().putString("serverBaseUrl", serverUrl).apply();
+    }
+
+    @Override
+    public void onUseDefaultServer() {
+        pref.edit().putString("serverBaseUrl", Config.VIDEO_SERVER_ADDRESS).apply();
     }
 
     private class RoomListAdapter extends ArrayAdapter<JSONObject> {

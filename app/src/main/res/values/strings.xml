@@ -8,8 +8,13 @@
 
     <!-- Menu -->
     <string name="account_menu">Account</string>
+    <string name="change_server_menu">Change Server</string>
     <string name="change_password_menu">Change Password</string>
     <string name="logout_menu">Logout</string>
+    <string name="change_server_hint">Input Video Server Url or Click Default</string>
+    <string name="change_server_ok">OK</string>
+    <string name="change_server_cancel">Cancel</string>
+    <string name="change_server_default">Default</string>
 
     <!-- Login -->
     <string name="login_email_hint">example@sfsu.edu</string>
@@ -62,6 +67,7 @@
 
     <!-- VI Rate -->
     <string name="vi_rate_submit_button">Submit</string>
+    <string name="vi_rate_cancel_button">Cancel</string>
     <string name="vi_rate_hint">Please Rate the Helper</string>
     <string name="vi_rate_message">Rate %1$s with %2$s Points, is it OK?</string>
     <string name="vi_rate_ok_button">OK</string>
@@ -86,6 +92,7 @@
 
     <!-- Helper Rate -->
     <string name="helper_rate_submit_button">Submit</string>
+    <string name="helper_rate_cancel_button">Cancel</string>
     <string name="helper_rate_hint">Please Rate the Visual Impairer</string>
     <string name="helper_rate_message">Rate %1$s with %2$s Points, is it OK?</string>
     <string name="helper_rate_ok_button">OK</string>

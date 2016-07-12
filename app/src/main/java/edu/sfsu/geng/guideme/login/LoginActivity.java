@@ -49,6 +49,31 @@ public class LoginActivity extends AppCompatActivity {
 
         pref = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
 
+        /* If already login in, go to home activity */
+        if (pref.getBoolean("logged", false)) {
+            String token = pref.getString("token", "");
+            String grav = pref.getString("grav", "");
+            String username = pref.getString("username", "");
+            String role = pref.getString("role", "");
+            String rate = pref.getString("rate", "");
+            if (!token.isEmpty() &&
+                !grav.isEmpty() &&
+                !username.isEmpty() &&
+                !role.isEmpty() &&
+                !rate.isEmpty()) {
+                // login directly
+                Intent homeActivity;
+                if (role.equals("vi")) {
+                    homeActivity = new Intent(LoginActivity.this, VIHomeActivity.class);
+                } else {// if (role.equals("helper")) {
+                    homeActivity = new Intent(LoginActivity.this, HelperHomeActivity.class);
+                }
+                startActivity(homeActivity);
+                finish();
+            }
+        }
+        /* Always run code above when open the app */
+
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                             edit.putString("token", token);
                             edit.putString("grav", grav);
                             edit.putString("username", username);
+                            edit.putString("role", role);
                             edit.putString("rate", rate);
                             edit.commit();
                             Intent homeActivity;

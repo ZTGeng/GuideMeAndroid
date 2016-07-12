@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
@@ -66,6 +67,8 @@ public class VIHomeActivity extends AppCompatActivity
         grav = pref.getString("grav", "");
         usernameStr = pref.getString("username", "");
         rateStr = pref.getString("rate", "5.0");
+        pref.edit().putBoolean("logged", true).apply();
+        updateMyRate();
 
         usernameText = (AppCompatTextView) findViewById(R.id.username_text);
         usernameText.setText(usernameStr);
@@ -102,22 +105,19 @@ public class VIHomeActivity extends AppCompatActivity
         JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/getfriendlist", params);
         if (json != null) {
             try {
-                String jsonStr = json.getString("response");
-                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+//                String jsonStr = json.getString("response");
+//                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
                 if (json.getBoolean("res")) {
                     JSONArray friendsJson =  json.getJSONArray("friends");
                     if (friendsJson == null) {
-                        System.out.println("Friend list is Null!!!");
+                        Log.d(TAG, "Friend list is Null!!!");
                     } else {
-                        try {
-                            friends = new String[friendsJson.length()];
-                            for (int i = 0; i < friendsJson.length(); i++) {
-                                friends[i] = friendsJson.getString(i);
-                            }
-                            Log.v(TAG, "Friend list: " + Arrays.toString(friends));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        friends = new String[friendsJson.length()];
+                        for (int i = 0; i < friendsJson.length(); i++) {
+                            friends[i] = friendsJson.getString(i);
                         }
+                        pref.edit().putStringSet("friends", new HashSet<String>(Arrays.asList(friends))).apply();
+                        Log.v(TAG, "Friend list: " + Arrays.toString(friends));
                     }
                 }
             } catch (JSONException e) {
@@ -202,7 +202,7 @@ public class VIHomeActivity extends AppCompatActivity
         if (json != null) {
             try {
                 String jsonStr = json.getString("response");
-                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
                 String roomId = json.getString("roomId");
                 Intent viVideoActivity = new Intent(VIHomeActivity.this, VIVideoActivity.class);
                 viVideoActivity.putExtra("sessionId", roomId);
@@ -310,6 +310,7 @@ public class VIHomeActivity extends AppCompatActivity
                 SharedPreferences.Editor edit = pref.edit();
                 //Storing Data using SharedPreferences
                 edit.putString("token", "");
+                edit.putBoolean("logged", false);
                 edit.commit();
                 Intent loginactivity = new Intent(VIHomeActivity.this, LoginActivity.class);
 
@@ -318,6 +319,24 @@ public class VIHomeActivity extends AppCompatActivity
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void updateMyRate() {
+        params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("username", usernameStr));
+        ServerRequest sr = new ServerRequest();
+        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/getrate", params);
+        if (json != null) {
+            try {
+                if (json.getBoolean("res")) {
+                    String newRate = String.valueOf(json.getDouble("rate"));
+                    rateStr = newRate;
+                    pref.edit().putString("rate", newRate).apply();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

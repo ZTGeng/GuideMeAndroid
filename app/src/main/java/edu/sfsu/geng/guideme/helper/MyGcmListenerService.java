@@ -14,6 +14,7 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 import java.util.Date;
 
+import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
 
 public class MyGcmListenerService extends GcmListenerService {
@@ -32,6 +33,9 @@ public class MyGcmListenerService extends GcmListenerService {
         String senderName = data.getString("senderName");
         String roomId = data.getString("roomId");
         boolean isNavigation = "true".equals(data.getString("isNavigation"));
+        String des = data.getString("des");
+//        String rate = data.getString("rate"); // <- this is VI's rate
+        String rate = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE).getString("rate", "5.0");
         long time = data.getLong("time");
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Sender: " + senderName + " roomId: " + roomId + " isNavigation: " + isNavigation + " time: " + (new Date(time)).toString());
@@ -54,7 +58,7 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(senderName, roomId, isNavigation);
+        sendNotification(senderName, roomId, isNavigation, des, rate);
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -65,10 +69,12 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param senderName GCM message received.
      * @param roomId GCM message received.
      */
-    private void sendNotification(String senderName, String roomId, boolean isNavigation) {
+    private void sendNotification(String senderName, String roomId, boolean isNavigation, String des, String rate) {
         Intent helperVideoActivity = new Intent(this, HelperVideoActivity.class);
         helperVideoActivity.putExtra("sessionId", roomId);
         helperVideoActivity.putExtra("isNavigation", isNavigation);
+        helperVideoActivity.putExtra("des", des);
+        helperVideoActivity.putExtra("myRate", rate);
         helperVideoActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, helperVideoActivity,
                 PendingIntent.FLAG_ONE_SHOT);

@@ -52,6 +52,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
@@ -151,7 +152,8 @@ public class VIVideoActivity extends AppCompatActivity implements
         }
         addFriendButton = (AppCompatButton) findViewById(R.id.add_friend_btn);
         if (addFriendButton != null) {
-            addFriendButton.setEnabled(false);
+//            addFriendButton.setEnabled(false);
+            addFriendButton.setVisibility(View.GONE);
             addFriendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -191,7 +193,7 @@ public class VIVideoActivity extends AppCompatActivity implements
         } else {
             isSendingLocation = false;
             if (toggleLocationButton != null) {
-                toggleLocationButton.setVisibility(View.INVISIBLE);
+                toggleLocationButton.setVisibility(View.GONE);
             }
 //            View fabGps = findViewById(R.id.fab_gps);
 //            if (fabGps != null) fabGps.setVisibility(View.INVISIBLE);
@@ -293,14 +295,14 @@ public class VIVideoActivity extends AppCompatActivity implements
     public void onAddFriend(final View view) {
 //        if (mPeerChannel != null) {
         if (isVideoStart) {
-            // TODO check already friends
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 //            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
             builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), helperName));
             builder.setPositiveButton(R.string.add_friend_ok_button, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    addFriendButton.setEnabled(false);
+//                    addFriendButton.setEnabled(false);
+                    addFriendButton.setVisibility(View.GONE);
                     try {
                         JSONObject json = new JSONObject();
                         json.putOpt("add", usernameStr);
@@ -356,12 +358,17 @@ public class VIVideoActivity extends AppCompatActivity implements
         mRtcSession.setOnLocalCandidateListener(this);
         mRtcSession.setOnLocalDescriptionListener(this);
 
-        String message = peerChannel.getPeerId() + " joined.";
+//        String message = peerChannel.getPeerId() + " joined.";
 //        connectText.setText(message);
 //        acceptButton.setEnabled(true);
 //        declineButton.setEnabled(true);
 //        fabAddFriend.setEnabled(true);
-        addFriendButton.setEnabled(true);
+//        addFriendButton.setEnabled(true);
+
+        Set<String> friends = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE).getStringSet("friends", null);
+        if (friends == null || !friends.contains(peerChannel.getPeerId())) {
+            addFriendButton.setVisibility(View.VISIBLE);
+        }
 
         onAcceptClicked(null);
     }
@@ -380,7 +387,8 @@ public class VIVideoActivity extends AppCompatActivity implements
 //        connectText.setText(R.string.connect_hint_vi);
 //        acceptButton.setEnabled(false);
 //        declineButton.setEnabled(false);
-        addFriendButton.setEnabled(false);
+//        addFriendButton.setEnabled(false);
+        addFriendButton.setVisibility(View.GONE);
     }
 
 
@@ -543,7 +551,7 @@ public class VIVideoActivity extends AppCompatActivity implements
     @Override
     public void onDisconnect() {
         Log.d(TAG, "onDisconnect");
-        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show();
 //        updateVideoView(false);
         mStreamSet = null;
         if (mRtcSession != null) {
@@ -583,7 +591,7 @@ public class VIVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onSessionFull() {
-        Toast.makeText(this, "Session is full", Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Session is full", Toast.LENGTH_LONG).show();
     }
 
 
@@ -783,6 +791,11 @@ public class VIVideoActivity extends AppCompatActivity implements
             helperArray = new JSONArray(helperListJson);
             for (int i = 0; i < helperArray.length(); i++) {
                 helperListAdapter.add(helperArray.getJSONObject(i));
+            }
+            if (helperArray.length() > 0) {
+                Toast.makeText(this, String.format(getResources().getString(R.string.helper_notice), helperArray.length()), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, R.string.helper_empty_notice, Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();

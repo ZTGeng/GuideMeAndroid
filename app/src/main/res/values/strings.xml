@@ -64,6 +64,8 @@
     <string name="add_friend_button">Add friend</string>
     <string name="confirm_accept_helper">Start Video Call with %1$s?</string>
     <string name="helper_item_rating_hint">Rating: </string>
+    <string name="helper_notice">There are %1$d Helpers in the List.</string>
+    <string name="helper_empty_notice">There are No Helpers Now, Please Wait.</string>
 
     <!-- VI Rate -->
     <string name="vi_rate_submit_button">Submit</string>
@@ -85,6 +87,7 @@
     <string name="token_error_message">An error occurred while either fetching the InstanceID token,
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
+    <string name="token_error_message_short">Error While Update GCM Token!</string>
     <string name="notify_message">%1$s Need Your Help</string>
 
     <!-- Helper Video -->

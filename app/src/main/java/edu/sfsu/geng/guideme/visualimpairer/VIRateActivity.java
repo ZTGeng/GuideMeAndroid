@@ -102,11 +102,11 @@ public class VIRateActivity extends AppCompatActivity {
                 ServerRequest sr = new ServerRequest();
                 JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/rate", params);
 
-                try {
-                    Toast.makeText(getApplication(), json.getString("response"), Toast.LENGTH_SHORT).show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Toast.makeText(getApplication(), json.getString("response"), Toast.LENGTH_SHORT).show();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
                 Intent homeActivity = new Intent(VIRateActivity.this, VIHomeActivity.class);
                 startActivity(homeActivity);

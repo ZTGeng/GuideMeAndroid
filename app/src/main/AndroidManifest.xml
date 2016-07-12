@@ -44,28 +44,34 @@
         <activity
             android:name=".visualimpairer.VIHomeActivity"
             android:label="@string/app_name"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".helper.HelperHomeActivity"
             android:label="@string/app_name"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".visualimpairer.VIVideoActivity"
             android:label="@string/title_activity_vivideo"
             android:screenOrientation="locked"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".helper.HelperVideoActivity"
             android:label="@string/title_activity_helper_video"
             android:screenOrientation="locked"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".visualimpairer.VIRateActivity"
             android:label="@string/title_activity_vi_rate"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".helper.HelperRateActivity"
             android:label="@string/title_activity_helper_rate"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver

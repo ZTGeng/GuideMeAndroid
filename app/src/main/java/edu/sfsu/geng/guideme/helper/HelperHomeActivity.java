@@ -41,6 +41,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import edu.sfsu.geng.guideme.Config;
@@ -56,6 +58,7 @@ public class HelperHomeActivity extends AppCompatActivity
 
     SharedPreferences pref;
     String token, grav, usernameStr, oldpassStr, newpassStr, rateStr;
+    String[] friends;
     AppCompatButton chgPasswordBtn, chgpassfrBtn, cancelBtn, logoutBtn, getRoomListBtn;
     Dialog dlg;
     AppCompatEditText oldpassEditText, newpassEditText;
@@ -84,6 +87,8 @@ public class HelperHomeActivity extends AppCompatActivity
         usernameStr = pref.getString("username", "");
         usernameText.setText(usernameStr);
         rateStr = pref.getString("rate", "5.0");
+        pref.edit().putBoolean("logged", true).apply();
+        updateMyRate();
 
         roomList = (ListViewCompat) findViewById(R.id.room_list);
         final RoomListAdapter roomListAdapter = new RoomListAdapter(this, -1, new ArrayList<JSONObject>());
@@ -121,6 +126,7 @@ public class HelperHomeActivity extends AppCompatActivity
                 }
             }
         });
+        getRoomListBtn.callOnClick();
 
         mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -130,10 +136,11 @@ public class HelperHomeActivity extends AppCompatActivity
                 SharedPreferences sharedPreferences = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE);
                 boolean sentToken = sharedPreferences
                         .getBoolean(RegistrationIntentService.SENT_TOKEN_TO_SERVER, false);
-                if (sentToken) {
-                    Toast.makeText(getApplicationContext(), R.string.gcm_send_message, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.token_error_message, Toast.LENGTH_SHORT).show();
+                if (!sentToken) {
+//                    Toast.makeText(getApplicationContext(), R.string.token_error_message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.token_error_message_short, Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(getApplicationContext(), R.string.gcm_send_message, Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -146,6 +153,8 @@ public class HelperHomeActivity extends AppCompatActivity
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
+
+        getFriendsList();
 
     }
 
@@ -228,6 +237,7 @@ public class HelperHomeActivity extends AppCompatActivity
                 SharedPreferences.Editor edit = pref.edit();
                 //Storing Data using SharedPreferences
                 edit.putString("token", "");
+                edit.putBoolean("logged", false);
                 edit.commit();
                 Intent loginactivity = new Intent(HelperHomeActivity.this, LoginActivity.class);
 
@@ -292,6 +302,54 @@ public class HelperHomeActivity extends AppCompatActivity
     @Override
     public void onUseDefaultServer() {
         pref.edit().putString("serverBaseUrl", Config.VIDEO_SERVER_ADDRESS).apply();
+    }
+
+    private void updateMyRate() {
+        params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("username", usernameStr));
+        ServerRequest sr = new ServerRequest();
+        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/getrate", params);
+        if (json != null) {
+            try {
+                if (json.getBoolean("res")) {
+                    String newRate = String.valueOf(json.getDouble("rate"));
+                    rateStr = newRate;
+                    pref.edit().putString("rate", newRate).apply();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // friends array should not be null after this method
+    private void getFriendsList() {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("username", usernameStr));
+
+        ServerRequest sr = new ServerRequest();
+        JSONObject json = sr.getJSON(Config.LOGIN_SERVER_ADDRESS + "/api/getfriendlist", params);
+        if (json != null) {
+            try {
+//                String jsonStr = json.getString("response");
+//                Toast.makeText(getApplication(), jsonStr, Toast.LENGTH_SHORT).show();
+                if (json.getBoolean("res")) {
+                    JSONArray friendsJson =  json.getJSONArray("friends");
+                    if (friendsJson == null) {
+                        Log.d(TAG, "Friend list is Null!!!");
+                    } else {
+                        friends = new String[friendsJson.length()];
+                        for (int i = 0; i < friendsJson.length(); i++) {
+                            friends[i] = friendsJson.getString(i);
+                        }
+                        pref.edit().putStringSet("friends", new HashSet<String>(Arrays.asList(friends))).apply();
+                        Log.v(TAG, "Friend list: " + Arrays.toString(friends));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class RoomListAdapter extends ArrayAdapter<JSONObject> {

@@ -55,7 +55,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.sfsu.geng.guideme.Config;
 import edu.sfsu.geng.guideme.R;
@@ -134,7 +137,8 @@ public class HelperVideoActivity extends AppCompatActivity implements
 //        fab = (FloatingActionButton) findViewById(R.id.fab);
         fabAddFriend = (FloatingActionButton) findViewById(R.id.fab_add_friend);
         if (fabAddFriend != null) {
-            fabAddFriend.setEnabled(false);
+//            fabAddFriend.setEnabled(false);
+            fabAddFriend.setVisibility(View.GONE);
         }
 
         connectText = (AppCompatTextView) findViewById(R.id.connect_text);
@@ -258,14 +262,14 @@ public class HelperVideoActivity extends AppCompatActivity implements
 
     public void onAddFriend(final View view) {
         if (isVideoStart) {
-            // TODO check already friends
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 //            builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), mPeerChannel.getPeerId()));
             builder.setMessage(String.format(getResources().getString(R.string.send_request_confirm_message), viName));
             builder.setPositiveButton(R.string.add_friend_ok_button, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    fabAddFriend.setEnabled(false);
+//                    fabAddFriend.setEnabled(false);
+                    fabAddFriend.setVisibility(View.GONE);
                     try {
                         JSONObject json = new JSONObject();
                         json.putOpt("add", usernameStr);
@@ -493,7 +497,13 @@ public class HelperVideoActivity extends AppCompatActivity implements
         viName = mPeerChannel.getPeerId();
 
         connectText.setText("");
-        fabAddFriend.setEnabled(true);
+
+//        fabAddFriend.setEnabled(true);
+        Set<String> friends = getSharedPreferences(Config.PREF_KEY, MODE_PRIVATE).getStringSet("friends", null);
+        if (friends == null || !friends.contains(viName)) {
+            fabAddFriend.setVisibility(View.VISIBLE);
+        }
+
         if (mRtcSession != null) {
             try {
                 mRtcSession.setRemoteDescription(sessionDescription);
